@@ -7,7 +7,7 @@ SELECT title, release_date
     WHERE director = 'George Lucas';
 ```
 
-![alt text](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/where1.png)
+![alt text](src/main/resources/sql-images/where1.png)
 
 Показать названия и продолжительность фильмовб которые длятся более 2.5 чвсов (160 минут):
 ```
