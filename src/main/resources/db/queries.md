@@ -94,7 +94,7 @@ SELECT username
 SELECT title 
     FROM movie_rating.movie
     WHERE id IN (SELECT movie_id 
-	    FROM movie_rating.genre 
+	FROM movie_rating.genre 
         WHERE genre = 8);
 ```
 
