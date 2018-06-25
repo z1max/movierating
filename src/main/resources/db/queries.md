@@ -28,7 +28,7 @@ INSERT INTO movie_rating.user (username, email, password, registered, status, en
 
 ![Build in function 1](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/buildin_func1.png)
 
-Вывести пользователей в виде JSON объекта:
+Вывести пользователей в виде JSON объектов:
 ```
 SELECT JSON_OBJECT('id', id, 'username', username, 'email', email, 'password', password)
     AS 'json_user'
@@ -57,4 +57,45 @@ SELECT title, AVG(rating)
     GROUP BY title;
 ```
 
-![Join 2](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/join2.png)tps://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/where2.png)
+![Join 2](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/join2.png)
+
+#### 4. Запрос с UNION.
+
+Вывести все немецкие фильмы и все анимационные фильмы:
+```
+SELECT title
+    FROM movie_rating.movie
+    JOIN movie_rating.country ON id = movie_id
+    WHERE name = 'DE'
+UNION
+SELECT title
+    FROM movie_rating.movie
+    JOIN movie_rating.genre ON id = movie_id
+    WHERE genre = 12;
+```
+
+![Union](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/union.png)
+
+#### 5. Запросы с использование подзапросов.
+
+Вывести пользователей, которые поставили оценку более десяти фильмам:
+```
+SELECT username
+    FROM movie_rating.user 
+    WHERE (SELECT COUNT(rating) 
+        FROM movie_rating.rating 
+        WHERE user_id = user.id) > 10;
+```
+
+![Subquery 1](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/subquery1.png)
+
+Вывести фильмы с жанром триллер:
+```
+SELECT title 
+    FROM movie_rating.movie
+    WHERE id IN (SELECT movie_id 
+	        FROM movie_rating.genre 
+        WHERE genre = 8);
+```
+
+![Subquery 2](https://github.com/z1max/movierating/blob/master/src/main/resources/sql-images/subquery2.png)
