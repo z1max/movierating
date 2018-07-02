@@ -3,11 +3,11 @@
 -- -----------------------------------------------------
 USE `movie_rating`;
 INSERT INTO `movie_rating`.`user` (`id`, `username`, `email`, `password`, `registered`, `status`, `enabled`) VALUES 
-  (1, 'admin', 'admin@gmail.com', 'adminpass', '2018-06-10', 'Bronze', 1),
-  (2, 'valera', 'valera@yandex.ru', 'valerapass', '2018-06-11', 'Silver', 1),
-  (3, 'sobakez', 'sobakez@gmail.com', 'sobakezpass', '2018-06-12', 'Gold', 1),
-  (4, 'tomimt', 'tomimt@hotmail.com', 'tominmtpass', '2018-06-12', 'Bronze', 1),
-  (5, 'Sam', 'sam@gmail.com', 'sampass', '2018-06-13', 'Bronze', 1);
+  (1, 'admin', 'admin@gmail.com', 'adminpass', '2018-06-10', 'BRONZE', 1),
+  (2, 'valera', 'valera@yandex.ru', 'valerapass', '2018-06-11', 'SILVER', 1),
+  (3, 'sobakez', 'sobakez@gmail.com', 'sobakezpass', '2018-06-12', 'GOLD', 1),
+  (4, 'tomimt', 'tomimt@hotmail.com', 'tominmtpass', '2018-06-12', 'BRONZE', 1),
+  (5, 'Sam', 'sam@gmail.com', 'sampass', '2018-06-13', 'BRONZE', 1);
 
 -- -----------------------------------------------------
 -- Data for table `movie_rating`.`user_role`

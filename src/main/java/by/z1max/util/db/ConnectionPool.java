@@ -3,9 +3,7 @@ package by.z1max.util.db;
 import by.z1max.exception.ConnectionPoolException;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -57,7 +55,7 @@ public final class ConnectionPool {
 
     public Connection take() throws ConnectionPoolException {
         LOG.debug("Taking connection from pool.");
-        Connection connection = null;
+        Connection connection;
         try {
             connection = connectionQueue.take();
             givenAwayQueue.add(connection);
@@ -76,6 +74,23 @@ public final class ConnectionPool {
             return true;
         }
         return false;
+    }
+
+    public void close(Statement statement, ResultSet resultSet){
+        if (resultSet != null){
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                LOG.error("Error closing ResultSet", e);
+            }
+        }
+        if (statement != null){
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                LOG.error("Error closing Statement", e);
+            }
+        }
     }
 
     private void closeConnectionQueue(BlockingQueue<Connection> queue) throws SQLException {

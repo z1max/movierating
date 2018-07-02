@@ -12,7 +12,7 @@ public class User extends BaseEntity {
     private boolean enabled;
     private Set<Role> roles;
 
-    public User(int id, String username, String email, String password, LocalDate registered, UserStatus status, boolean enabled) {
+    public User(Integer id, String username, String email, String password, LocalDate registered, UserStatus status, boolean enabled) {
         super(id);
         this.username = username;
         this.email = email;
@@ -68,5 +68,28 @@ public class User extends BaseEntity {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("User{");
+        sb.append("id='").append(super.getId()).append('\'');
+        sb.append(", username='").append(username).append('\'');
+        sb.append(", email='").append(email).append('\'');
+        sb.append(", password='").append(password).append('\'');
+        sb.append(", registered=").append(registered);
+        sb.append(", status=").append(status);
+        sb.append(", enabled=").append(enabled);
+        sb.append(", roles=").append(roles);
+        sb.append('}');
+        return sb.toString();
     }
 }
