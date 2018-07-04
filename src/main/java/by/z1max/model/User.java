@@ -1,6 +1,7 @@
 package by.z1max.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 
 public class User extends BaseEntity {
@@ -76,6 +77,26 @@ public class User extends BaseEntity {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return  Objects.equals(super.getId(), user.getId()) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(registered, user.registered) &&
+                enabled == user.enabled &&
+                status == user.status &&
+                Objects.equals(roles, user.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, email, password, registered, status, enabled, roles);
     }
 
     @Override

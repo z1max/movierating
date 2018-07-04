@@ -29,7 +29,11 @@ public class UserDaoImpl implements UserDao {
     private static final String CREATE_ROLES = "INSERT INTO movie_rating.user_role(user_id, role) VALUES (?,?)";
     private static final String UPDATE = "UPDATE movie_rating.user SET username=?, email=?, password=?, registered=?, status=?, enabled=? WHERE id =?";
 
-    private DataSource dataSource = DataSource.getInstance(new ConnectionPool());
+    private DataSource dataSource;
+
+    public UserDaoImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public User findById(int id) throws DaoException {
@@ -98,14 +102,22 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void delete(User user) throws DaoException {
+    public boolean delete(int id) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = dataSource.getConnection();
+            Statement checkForKeys = connection.createStatement();
+            checkForKeys.executeUpdate("SET FOREIGN_KEY_CHECKS=0");
             statement = connection.prepareStatement(DELETE);
-            statement.setInt(1, user.getId());
+            statement.setInt(1, id);
+            int rows = statement.executeUpdate();
+            statement = connection.prepareStatement(DELETE_ROLES);
+            statement.setInt(1, id);
             statement.executeUpdate();
+            checkForKeys.executeUpdate("SET FOREIGN_KEY_CHECKS=1");
+            checkForKeys.close();
+            return rows == 1;
         } catch (ConnectionPoolException | SQLException e) {
             throw new DaoException("Error deleting user", e);
         } finally {

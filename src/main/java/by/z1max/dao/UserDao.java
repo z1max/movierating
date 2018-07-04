@@ -10,5 +10,5 @@ public interface UserDao {
     User findByEmail(String email) throws DaoException;
     List<User> findAll() throws DaoException;
     User save(User user) throws DaoException;
-    void delete(User user) throws DaoException;
+    boolean delete(int id) throws DaoException;
 }
