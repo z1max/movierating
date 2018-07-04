@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(60) NOT NULL,
+  `password` VARCHAR(64) NOT NULL,
   `registered` TIMESTAMP NOT NULL,
   `status` VARCHAR(45) NOT NULL,
   `enabled` TINYINT(1) NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`genre` (
   CONSTRAINT `fk_genres_movie`
     FOREIGN KEY (`movie_id`)
     REFERENCES `movie_rating`.`movie` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`review` (
   CONSTRAINT `fk_review_movie1`
     FOREIGN KEY (`movie_id`)
     REFERENCES `movie_rating`.`movie` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`rating` (
   CONSTRAINT `fk_rating_movie1`
     FOREIGN KEY (`movie_id`)
     REFERENCES `movie_rating`.`movie` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`country` (
   CONSTRAINT `fk_countries_movies1`
     FOREIGN KEY (`movie_id`)
     REFERENCES `movie_rating`.`movie` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
