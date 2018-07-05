@@ -24,7 +24,6 @@ public class ValidationUtil {
         return string.length() <= bound;
     }
 
-
     public static boolean validateUsername(String username){
         return username.matches(USERNAME_PATTERN);
     }

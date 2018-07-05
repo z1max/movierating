@@ -2,7 +2,6 @@ package by.z1max.dto;
 
 import by.z1max.model.Country;
 import by.z1max.model.Genre;
-import by.z1max.model.Movie;
 
 import java.time.LocalDate;
 import java.util.Set;

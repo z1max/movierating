@@ -8,8 +8,8 @@ import by.z1max.model.Movie;
 import java.util.List;
 
 public interface MovieService {
-    public List<LazyMovie> getAll() throws ServiceException;
-    public EagerMovie get(int id) throws ServiceException;
-    public void delete(Movie movie) throws ServiceException;
-    public void save(Movie movie) throws ServiceException;
+    List<LazyMovie> getAll() throws ServiceException;
+    EagerMovie get(int id) throws ServiceException;
+    void delete(Movie movie) throws ServiceException;
+    void save(Movie movie) throws ServiceException;
 }
