@@ -8,5 +8,5 @@ import java.util.List;
 public interface ReviewDao {
     List<Review> findByMovieId(int id) throws DaoException;
     Review create(Review review) throws DaoException;
-    void delete(Review review) throws DaoException;
+    boolean delete(int id) throws DaoException;
 }

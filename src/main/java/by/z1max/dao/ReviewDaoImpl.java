@@ -3,7 +3,6 @@ package by.z1max.dao;
 import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.DaoException;
 import by.z1max.model.Review;
-import by.z1max.util.db.ConnectionPool;
 import by.z1max.util.db.DataSource;
 
 import java.sql.*;
@@ -13,12 +12,16 @@ import java.util.List;
 
 public class ReviewDaoImpl implements ReviewDao{
 
-    private static final String FIND_BY_MOVIE_ID = "SELECT review.id, user.id AS user_id username, movie_id, comment, date FROM review JOIN movie_rating.user ON user_id = user.id WHERE movie_id = ?";
+    private static final String FIND_BY_MOVIE_ID = "SELECT review.id, user.id AS user_id, username, movie_id, comment, date FROM review JOIN movie_rating.user ON user_id = user.id WHERE movie_id = ?";
     private static final String CREATE = "INSERT INTO review(user_id, movie_id, comment, date) VALUES (?,?,?,?)";
     private static final String DELETE = "DELETE FROM review WHERE id = ?";
 
-    private DataSource dataSource = DataSource.getInstance(new ConnectionPool());
-    
+    private DataSource dataSource;
+
+    public ReviewDaoImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public List<Review> findByMovieId(int id) throws DaoException {
         Connection connection = null;
@@ -64,14 +67,16 @@ public class ReviewDaoImpl implements ReviewDao{
     }
 
     @Override
-    public void delete(Review review) throws DaoException {
+    public boolean delete(int id) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
             statement = connection.prepareStatement(DELETE);
-            statement.setInt(1, review.getId());
+            statement.setInt(1, id);
+            int rows = statement.executeUpdate();
+            return rows == 1;
         } catch (ConnectionPoolException | SQLException e) {
             throw new DaoException("Error deleting review", e);
         } finally {
