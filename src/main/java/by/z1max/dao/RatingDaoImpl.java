@@ -3,7 +3,6 @@ package by.z1max.dao;
 import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.DaoException;
 import by.z1max.model.Rating;
-import by.z1max.util.db.ConnectionPool;
 import by.z1max.util.db.DataSource;
 
 import java.sql.Connection;
@@ -16,8 +15,12 @@ public class RatingDaoImpl implements RatingDao {
     private static final String FIND_BY_USER_ID = "SELECT * FROM rating WHERE user_id= ? AND movie_id = ?";
     private static final String GET_AVERAGE_RATING = "SELECT ROUND(AVG(rating), 2) FROM rating WHERE movie_id = ?";
     private static final String CREATE = "INSERT INTO rating(user_id, movie_id, rating) VALUES (?,?,?)";
-    private DataSource dataSource = DataSource.getInstance(new ConnectionPool());
 
+    private DataSource dataSource;
+
+    public RatingDaoImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public Rating findById(int userId, int movieId) throws DaoException {
@@ -83,6 +86,9 @@ public class RatingDaoImpl implements RatingDao {
     }
 
     private Rating map(ResultSet resultSet) throws SQLException {
+        if (!resultSet.isBeforeFirst()){
+            return null;
+        }
         resultSet.first();
         int userId = resultSet.getInt("user_id");
         int movieId = resultSet.getInt("movie_id");
