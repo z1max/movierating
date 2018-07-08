@@ -43,4 +43,8 @@ public class DataSource {
         return result;
     }
 
+    public void dispose(){
+        pool.dispose();
+        pool = null;
+    }
 }
