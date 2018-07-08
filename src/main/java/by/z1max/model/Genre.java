@@ -17,5 +17,11 @@ public enum Genre {
     HISTORY,
     BIOGRAPHY,
     SPORT,
-    WESTERN
+    WESTERN;
+
+    @Override
+    public String toString(){
+        String upper = super.toString();
+        return upper.charAt(0) + upper.substring(1).toLowerCase().replaceAll("_","-");
+    }
 }
