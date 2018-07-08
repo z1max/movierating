@@ -13,7 +13,7 @@ import java.sql.SQLException;
 public class RatingDaoImpl implements RatingDao {
 
     private static final String FIND_BY_USER_ID = "SELECT * FROM rating WHERE user_id= ? AND movie_id = ?";
-    private static final String GET_AVERAGE_RATING = "SELECT ROUND(AVG(rating), 2) FROM rating WHERE movie_id = ?";
+    private static final String GET_AVERAGE_RATING = "SELECT ROUND(AVG(rating), 1) FROM rating WHERE movie_id = ?";
     private static final String CREATE = "INSERT INTO rating(user_id, movie_id, rating) VALUES (?,?,?)";
 
     private DataSource dataSource;
