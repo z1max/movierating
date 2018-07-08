@@ -1,81 +1,45 @@
 package by.z1max.dto;
 
-import by.z1max.model.Country;
-import by.z1max.model.Genre;
 import by.z1max.model.Review;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-public class EagerMovie {
-    private int id;
-    private String title;
-    private String director;
-    private float rating;
-    private LocalDate releaseDate;
+public class EagerMovie extends BaseMovie {
     private int budget;
     private String description;
-    private short runtime;
-    private Set<Genre> genres;
-    private Set<Country> countries;
     private List<Review> reviews;
 
-    public EagerMovie(int id, String title, String director, float rating, LocalDate releaseDate, int budget, String description, short runtime, Set<Genre> genres, Set<Country> countries, List<Review> reviews) {
-        this.id = id;
-        this.title = title;
-        this.director = director;
-        this.rating = rating;
-        this.releaseDate = releaseDate;
+    public EagerMovie(){}
+
+    public EagerMovie(int id, String title, String director, float rating, Date releaseDate, short runtime, String genres, String countries, int budget, String description, List<Review> reviews) {
+        super(id, title, director, rating, releaseDate, runtime, genres, countries);
         this.budget = budget;
         this.description = description;
-        this.runtime = runtime;
-        this.genres = genres;
-        this.countries = countries;
         this.reviews = reviews;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDirector() {
-        return director;
-    }
-
-    public float getRating() {
-        return rating;
-    }
-
-    public LocalDate getReleaseDate() {
-        return releaseDate;
     }
 
     public int getBudget() {
         return budget;
     }
 
+    public void setBudget(int budget) {
+        this.budget = budget;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public short getRuntime() {
-        return runtime;
-    }
-
-    public Set<Genre> getGenres() {
-        return genres;
-    }
-
-    public Set<Country> getCountries() {
-        return countries;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<Review> getReviews() {
         return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }
