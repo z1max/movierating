@@ -5,8 +5,11 @@ import by.z1max.exception.DaoException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Review;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
+import static by.z1max.util.ValidationUtil.checkLength;
 import static by.z1max.util.ValidationUtil.checkNotFound;
 
 public class ReviewServiceImpl implements ReviewService {
@@ -28,6 +31,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review create(Review review) throws ServiceException {
+        Objects.requireNonNull(review);
+        review.setDate(LocalDate.now());
+        if (!checkLength(review.getComment(), 1200)){
+            throw new ServiceException("Comment must be less than 1200 characters");
+        }
         try {
             return reviewDao.create(review);
         } catch (DaoException e) {
