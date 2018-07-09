@@ -26,6 +26,7 @@ public class MovieUtil {
     public static EagerMovie getFrom(Movie movie, float rating, List<Review> reviews){
         EagerMovie eagerMovie = new EagerMovie();
         getCommonFields(eagerMovie, movie);
+        eagerMovie.setRating(rating);
         eagerMovie.setBudget(movie.getBudget());
         eagerMovie.setDescription(movie.getDescription());
         eagerMovie.setReviews(reviews);
