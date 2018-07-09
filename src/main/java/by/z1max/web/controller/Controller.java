@@ -1,5 +1,6 @@
 package by.z1max.web.controller;
 
+import by.z1max.util.Context;
 import by.z1max.util.db.ConnectionPool;
 import by.z1max.util.db.DataSource;
 import by.z1max.web.command.Command;
@@ -15,33 +16,33 @@ import java.io.IOException;
 @WebServlet("/front")
 public class Controller extends HttpServlet {
 
-    private DataSource dataSource;
+    private Context context;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        dataSource = DataSource.getInstance(new ConnectionPool());
+        context = Context.getInstance();
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        dataSource.dispose();
-        dataSource = null;
+        context.destroy();
+        context = null;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = getCommand(req.getParameter("command"));
         command.init(req, resp);
-        command.process(dataSource);
+        command.process(context);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = getCommand(req.getParameter("command"));
         command.init(req, resp);
-        command.process(dataSource);
+        command.process(context);
     }
 
     private Command getCommand(String command){
