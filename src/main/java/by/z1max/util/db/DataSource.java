@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DataSource {
-    private static  volatile DataSource instance;
+    private static volatile DataSource instance;
     private ConnectionPool pool;
 
     private DataSource(ConnectionPool pool){
