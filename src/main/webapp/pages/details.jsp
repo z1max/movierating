@@ -3,7 +3,7 @@
 <html>
     <head>
         <%@ include file="fragments/meta.jsp" %>
-        <title>Movie Rating | Details</title>
+        <title>Movie Rating | <fmt:message key="title.details"/> </title>
     </head>
     <body>
         <%@ include file="fragments/header.jsp" %>
@@ -12,6 +12,14 @@
                 <%@ include file="fragments/error.jsp" %>
                 <div class="movie-details">
                     <h1>${movie.title}</h1>
+                    <c:if test="${activeUser.isAdmin()}">
+                        <div>
+                            <a href="front?comman=EditMovie"><fmt:message key="movie.edit"/></a>
+                            <form method="post" action="front?comman=DeleteMovie">
+                                <input type="submit" value="<fmt:message key="movie.delete"/>">
+                            </form>
+                        </div>
+                    </c:if>
                     <div>
                         <form method="post" action="front?command=Rate" onchange="submit()">
                             <input type="hidden" name="movieId" value="${movie.id}">

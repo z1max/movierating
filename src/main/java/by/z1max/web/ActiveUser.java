@@ -50,6 +50,10 @@ public class ActiveUser {
         this.status = status;
     }
 
+    public boolean isAdmin(){
+        return roles.contains(Role.ROLE_ADMIN);
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ActiveUser{");

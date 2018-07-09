@@ -79,6 +79,10 @@ public class User extends BaseEntity {
         this.roles = roles;
     }
 
+    public boolean isAdmin(){
+        return roles.contains(Role.ROLE_ADMIN);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

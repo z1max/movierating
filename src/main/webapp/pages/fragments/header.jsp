@@ -4,26 +4,35 @@
         <a class="logo" href="${pageContext.request.contextPath}">Movie Rating</a>
     </div>
     <div class="menu-container">
-        <div class="menu-item">
-            <c:choose>
-                <c:when test="${not empty activeUser}">
+        <c:choose>
+            <c:when test="${not empty activeUser}">
+                <c:if test="${activeUser.isAdmin()}">
+                    <div class="menu-item">
+                        <a href="front?command=AdminPage"><fmt:message key="title.adminPage"/></a>
+                    </div>
+                </c:if>
+                <div class="menu-item">
                     <a style="color:white" href="front?command=Profile">${activeUser.username}</a>
+                </div>
+                <div class="menu-item">
                     <form method="post" action="front?command=Logout">
                         <input type="submit" value="Logout">
                     </form>
-                </c:when>
-                <c:otherwise>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="menu-item">
                     <a style="color: white" href="front?command=Signin"><fmt:message key="title.signin"/></a>
-                </c:otherwise>
-            </c:choose>
-        </div>
+                </div>
+            </c:otherwise>
+        </c:choose>
         <div class="menu-item">
-        <form method="post" action="front?command=ChangeLanguage">
-            <select id="language" name="language" onchange="submit()">
-                <option value="en" ${language == 'en' ? 'selected' : ''}>English</option>
-                <option value="ru" ${language == 'ru' ? 'selected' : ''}>Русский</option>
-            </select>
-        </form>
+            <form method="post" action="front?command=ChangeLanguage">
+                <select id="language" name="language" onchange="submit()">
+                    <option value="en" ${language == 'en' ? 'selected' : ''}>English</option>
+                    <option value="ru" ${language == 'ru' ? 'selected' : ''}>Русский</option>
+                </select>
+            </form>
         </div>
     </div>
 </header>
