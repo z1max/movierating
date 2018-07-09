@@ -1,6 +1,6 @@
 package by.z1max.web.command;
 
-import by.z1max.util.db.DataSource;
+import by.z1max.util.Context;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,7 +17,7 @@ public abstract class Command {
         this.request = request;
     }
 
-    public abstract void process(DataSource dataSource) throws ServletException, IOException;
+    public abstract void process(Context context) throws ServletException, IOException;
 
     protected void forward(String target) throws ServletException, IOException {
         target = String.format("pages/%s.jsp", target);

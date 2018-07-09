@@ -5,9 +5,10 @@ import by.z1max.util.Context;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class UnknownCommand extends Command {
+public class LogoutCommand extends Command {
     @Override
     public void process(Context context) throws ServletException, IOException {
-        forward("index");
+        request.getSession().invalidate();
+        response.sendRedirect(request.getContextPath());
     }
 }
