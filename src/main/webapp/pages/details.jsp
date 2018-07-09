@@ -1,8 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value="ru_RU"/>
-<fmt:setBundle basename="i18n/messages"/>
 <!doctype html>
 <html>
     <head>
@@ -13,16 +9,32 @@
         <%@ include file="fragments/header.jsp" %>
         <section>
             <div class="content">
+                <%@ include file="fragments/error.jsp" %>
                 <div class="movie-details">
                     <h1>${movie.title}</h1>
+                    <div>
+                        <form method="post" action="front?command=Rate" onchange="submit()">
+                            <input type="hidden" name="movieId" value="${movie.id}">
+                            <label for="user-rating"><fmt:message key="movie.userRating"/></label>
+                            <select id="user-rating" name="rating" ${not empty userRating ? 'disabled' : ''}>
+                                <c:forEach var="i" begin="1" end="10">
+                                    <option value="${i}" ${not empty userRating and userRating == i ? 'selected' : ''}>${i}</option>
+                                </c:forEach>
+                            </select>
+                        </form>
+                    </div>
                     <table class="table">
+                        <tr>
+                            <th><fmt:message key="movie.rating"/></th>
+                            <td>${movie.rating}</td>
+                        </tr>
                         <tr>
                             <th><fmt:message key="movie.director"/></th>
                             <td>${movie.director}</td>
                         </tr>
                         <tr>
                             <th><fmt:message key="movie.releaseDate"/></th>
-                            <td>${movie.releaseDate}</td>
+                            <td><fmt:formatDate value="${movie.releaseDate}"/></td>
                         </tr>
                         <tr>
                             <th><fmt:message key="movie.runtime"/></th>
@@ -45,6 +57,29 @@
                     <div>
                         <p>${movie.description}</p>
                     </div>
+                </div>
+                <div>
+                    <h2>Comments</h2>
+                    <c:forEach items="${movie.reviews}" var="review">
+                        <div>
+                            <div>
+                                    ${review.username}
+                                    ${review.date}
+                            </div>
+                            <div>
+                                    ${review.comment}
+                            </div>
+                        </div>
+                        <hr/>
+                    </c:forEach>
+                </div>
+                <div>
+                    <h2>Write review</h2>
+                    <form id="review" method="post" action="front?command=WriteReview">
+                        <input type="hidden" name="movieId" value="${movie.id}">
+                        <input type="submit">
+                    </form>
+                    <textarea form="review" name="review"></textarea>
                 </div>
             </div>
         </section>
