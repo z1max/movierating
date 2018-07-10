@@ -11,7 +11,7 @@
             <div class="content">
                 <%@ include file="fragments/error.jsp"%>
                 <div class="content-small">
-                    <form class="form" name="signIn" method="post" action="front?command=Signin" onsubmit="return validate(false)">
+                    <form class="form" name="signIn" method="post" action="front?command=Signin" onsubmit="return validate(this, false)">
                         <label for="email"><fmt:message key="user.email"/></label>
                         <input id="email" type="email" name="email">
                         <span id="email-error" class="email-error"><fmt:message key="validation.email"/></span>
