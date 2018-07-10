@@ -20,7 +20,7 @@ public class DetailsCommand extends Command {
         ActiveUser activeUser = (ActiveUser) request.getSession(false).getAttribute("activeUser");
 
         try {
-            EagerMovie movie = movieService.get(movieId);
+            EagerMovie movie = movieService.getEager(movieId);
             request.setAttribute("movie", movie);
             if (activeUser != null){
                 byte rating = ratingService.getById(activeUser.getId(), movieId).getRating();
