@@ -15,6 +15,8 @@ public class Movie extends BaseEntity {
     private Set<Country> countries;
     private List<Review> reviews;
 
+    public Movie(){}
+
     public Movie(Integer id, String title, String director, LocalDate releaseDate, int budget, String description, short runtime) {
         super(id);
         this.title = title;

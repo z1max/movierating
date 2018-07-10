@@ -3,6 +3,8 @@ package by.z1max.model;
 public class BaseEntity {
     private Integer id;
 
+    public BaseEntity(){}
+
     public BaseEntity(Integer id) {
         this.id = id;
     }
