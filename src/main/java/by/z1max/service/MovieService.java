@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface MovieService {
     List<LazyMovie> getAll() throws ServiceException;
-    EagerMovie get(int id) throws ServiceException;
+    EagerMovie getEager(int id) throws ServiceException;
+    Movie get(int id) throws ServiceException;
     void delete(Movie movie) throws ServiceException;
     void save(Movie movie) throws ServiceException;
 }

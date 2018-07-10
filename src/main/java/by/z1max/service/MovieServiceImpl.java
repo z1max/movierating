@@ -49,7 +49,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public EagerMovie get(int id) throws ServiceException {
+    public EagerMovie getEager(int id) throws ServiceException {
         try {
             Movie movie = movieDao.findById(id);
             float rating = ratingDao.getAverageRating(id);
@@ -57,6 +57,15 @@ public class MovieServiceImpl implements MovieService {
             return MovieUtil.getFrom(movie, rating, reviews);
         } catch (DaoException e) {
             throw new ServiceException("Error getting movie by id", e);
+        }
+    }
+
+    @Override
+    public Movie get(int id) throws ServiceException {
+        try {
+            return movieDao.findById(id);
+        } catch (DaoException e) {
+            throw new ServiceException("Error getting by id");
         }
     }
 
