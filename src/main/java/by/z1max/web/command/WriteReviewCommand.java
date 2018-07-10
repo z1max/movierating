@@ -1,11 +1,8 @@
 package by.z1max.web.command;
 
-import by.z1max.dao.ReviewDao;
-import by.z1max.dao.ReviewDaoImpl;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Review;
 import by.z1max.service.ReviewService;
-import by.z1max.service.ReviewServiceImpl;
 import by.z1max.util.Context;
 import by.z1max.web.ActiveUser;
 
