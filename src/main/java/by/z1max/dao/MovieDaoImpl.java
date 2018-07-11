@@ -199,7 +199,7 @@ public class MovieDaoImpl implements MovieDao {
             for (Country country : movie.getCountries()) {
                 statement = connection.prepareStatement(CREATE_COUNTRIES);
                 statement.setInt(1, id);
-                statement.setInt(2, country.ordinal());
+                statement.setString(2, country.toString());
                 statement.executeUpdate();
             }
             movie.setId(id);
@@ -251,7 +251,7 @@ public class MovieDaoImpl implements MovieDao {
             for (Country country : movie.getCountries()) {
                 statement = connection.prepareStatement(CREATE_COUNTRIES);
                 statement.setInt(1, movie.getId());
-                statement.setInt(2, country.ordinal());
+                statement.setString(2, country.toString());
                 statement.executeUpdate();
             }
             connection.commit();

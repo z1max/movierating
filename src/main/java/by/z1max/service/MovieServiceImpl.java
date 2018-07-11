@@ -79,7 +79,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void save(Movie movie) throws ServiceException {
+    public Movie save(Movie movie) throws ServiceException {
         Objects.requireNonNull(movie);
         if (!checkLength(movie.getTitle(), MAX_TITLE_LENGTH)){
             throw new ServiceException("Title length must be less than " + MAX_TITLE_LENGTH);
@@ -91,7 +91,7 @@ public class MovieServiceImpl implements MovieService {
             throw new ServiceException("Description length must be less than " + MAX_DESCRIPTION_LENGTH);
         }
         try {
-            movieDao.save(movie);
+            return movieDao.save(movie);
         } catch (DaoException e) {
             throw new ServiceException("Error saving movie", e);
         }

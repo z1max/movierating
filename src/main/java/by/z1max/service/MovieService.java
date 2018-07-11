@@ -12,5 +12,5 @@ public interface MovieService {
     EagerMovie getEager(int id) throws ServiceException;
     Movie get(int id) throws ServiceException;
     void delete(Movie movie) throws ServiceException;
-    void save(Movie movie) throws ServiceException;
+    Movie save(Movie movie) throws ServiceException;
 }
