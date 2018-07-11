@@ -14,8 +14,8 @@
                     <h1>${movie.title}</h1>
                     <c:if test="${activeUser.isAdmin()}">
                         <div>
-                            <a href="front?comman=EditMovie"><fmt:message key="movie.edit"/></a>
-                            <form method="post" action="front?comman=DeleteMovie">
+                            <a href="front?command=EditMovie&movieId=${movie.id}"><fmt:message key="movie.edit"/></a>
+                            <form method="post" action="front?command=DeleteMovie">
                                 <input type="submit" value="<fmt:message key="movie.delete"/>">
                             </form>
                         </div>

@@ -10,7 +10,7 @@
         <section>
             <div class="content">
                 <div class="button-container">
-                    <a href="front?command=AddMovie"><fmt:message key="movie.add"/></a>
+                    <a href="front?command=EditMovie"><fmt:message key="movie.add"/></a>
                 </div>
                 <table>
                     <thead>
