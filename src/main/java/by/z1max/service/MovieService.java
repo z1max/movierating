@@ -11,6 +11,6 @@ public interface MovieService {
     List<LazyMovie> getAll() throws ServiceException;
     EagerMovie getEager(int id) throws ServiceException;
     Movie get(int id) throws ServiceException;
-    void delete(Movie movie) throws ServiceException;
+    void delete(int id) throws ServiceException;
     Movie save(Movie movie) throws ServiceException;
 }

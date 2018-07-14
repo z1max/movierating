@@ -70,9 +70,9 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void delete(Movie movie) throws ServiceException {
+    public void delete(int id) throws ServiceException {
         try {
-            checkNotFound(movieDao.delete(movie.getId()));
+            checkNotFound(movieDao.delete(id));
         } catch (DaoException e) {
             throw new ServiceException("Error deleting movie");
         }

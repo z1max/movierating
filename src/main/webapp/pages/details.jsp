@@ -16,6 +16,7 @@
                         <div>
                             <a href="front?command=EditMovie&movieId=${movie.id}"><fmt:message key="movie.edit"/></a>
                             <form method="post" action="front?command=DeleteMovie">
+                                <input type="hidden" name="movieId" value="${movie.id}">
                                 <input type="submit" value="<fmt:message key="movie.delete"/>">
                             </form>
                         </div>
