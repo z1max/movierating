@@ -1,8 +1,6 @@
 package by.z1max.web.controller;
 
 import by.z1max.util.Context;
-import by.z1max.util.db.ConnectionPool;
-import by.z1max.util.db.DataSource;
 import by.z1max.web.command.Command;
 import by.z1max.web.command.UnknownCommand;
 
