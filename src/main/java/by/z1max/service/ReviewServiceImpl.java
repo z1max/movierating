@@ -1,6 +1,7 @@
 package by.z1max.service;
 
 import by.z1max.dao.ReviewDao;
+import by.z1max.dao.UserDao;
 import by.z1max.exception.DaoException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Review;
@@ -15,9 +16,11 @@ import static by.z1max.util.ValidationUtil.checkNotFound;
 public class ReviewServiceImpl implements ReviewService {
 
     private ReviewDao reviewDao;
+    private UserDao userDao;
 
-    public ReviewServiceImpl(ReviewDao reviewDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao) {
         this.reviewDao = reviewDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -37,7 +40,9 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ServiceException("Comment must be less than 1200 characters");
         }
         try {
-            return reviewDao.create(review);
+            Review result = reviewDao.create(review);
+            userDao.addPoints(review.getUserId(), 2);
+            return result;
         } catch (DaoException e) {
             throw new ServiceException("Error creating review", e);
         }

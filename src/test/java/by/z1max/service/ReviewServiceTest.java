@@ -2,6 +2,8 @@ package by.z1max.service;
 
 import by.z1max.dao.ReviewDao;
 import by.z1max.dao.ReviewDaoImpl;
+import by.z1max.dao.UserDao;
+import by.z1max.dao.UserDaoImpl;
 import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Review;
@@ -24,6 +26,7 @@ public class ReviewServiceTest {
     private static ConnectionPool connectionPool;
     private static DataSource dataSource;
     private static ReviewDao reviewDao;
+    private static UserDao userDao;
     private static ReviewService service;
 
     @BeforeClass
@@ -31,7 +34,8 @@ public class ReviewServiceTest {
         connectionPool = new ConnectionPool();
         dataSource = DataSource.getInstance(connectionPool);
         reviewDao = new ReviewDaoImpl(dataSource);
-        service = new ReviewServiceImpl(reviewDao);
+        userDao = new UserDaoImpl(dataSource);
+        service = new ReviewServiceImpl(reviewDao, userDao);
     }
 
     @AfterClass

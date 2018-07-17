@@ -6,7 +6,6 @@ import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Role;
 import by.z1max.model.User;
-import by.z1max.model.UserStatus;
 import by.z1max.util.PasswordEncoder;
 import by.z1max.util.db.ConnectionPool;
 import by.z1max.util.db.DataSource;
@@ -83,7 +82,7 @@ public class UserServiceTest {
 
     @Test
     public void create() throws ServiceException {
-        User user = new User(null, "newuser", "newuser@gmail.com", "newuserpass", null, null, true);
+        User user = new User("newuser", "newuser@gmail.com", "newuserpass");
         user.setRoles(EnumSet.of(Role.ROLE_USER));
         User actual = service.save(user);
         assertThat(actual).isEqualToComparingFieldByField(NEW);
@@ -93,8 +92,7 @@ public class UserServiceTest {
 
     @Test
     public void createWithDuplicateUsername() throws ServiceException {
-        User user = new User(null, "admin", "superadmin@gmail.com",
-                "superadminpass", null, null, true);
+        User user = new User("admin", "superadmin@gmail.com","superadminpass");
         thrown.expect(ServiceException.class);
         thrown.expectMessage("Error saving user");
         service.save(user);
@@ -102,8 +100,7 @@ public class UserServiceTest {
 
     @Test
     public void createWithDuplicateEmail() throws ServiceException {
-        User user = new User(null, "admin1", "admin@gmail.com",
-                "superadminpass", null, null, true);
+        User user = new User("admin1", "admin@gmail.com","superadminpass");
         thrown.expect(ServiceException.class);
         thrown.expectMessage("Error saving user");
         service.save(user);
@@ -112,12 +109,12 @@ public class UserServiceTest {
     @Test
     public void update() throws ServiceException {
         User user = new User(2, "updated", "updated@gmail.com", "updatedpass",
-                LocalDate.of(2018, 06, 11), UserStatus.SILVER, true);
+                LocalDate.of(2018, 06, 11), 32, true);
         user.setRoles(EnumSet.of(Role.ROLE_USER));
         User updated = service.save(user);
         assertThat(updated).isEqualToComparingFieldByField(UPDATED);
         User restored = new User(USER1.getId(), USER1.getUsername(), USER1.getEmail(), "valerapass",
-                USER1.getRegistered(), USER1.getStatus(), USER1.isEnabled());
+                USER1.getRegistered(), USER1.getPoints(), USER1.isEnabled());
         restored.setRoles(EnumSet.of(Role.ROLE_USER));
         service.save(restored);
     }
@@ -150,9 +147,9 @@ public class UserServiceTest {
         try {
             connection = dataSource.getConnection();
             statement = connection.createStatement();
-            statement.executeUpdate("INSERT INTO user(id, username, email, password, registered, status, enabled)" +
+            statement.executeUpdate("INSERT INTO user(id, username, email, password, registered, points, enabled)" +
                     " VAlUES (1, 'admin', 'admin@gmail.com', '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca'," +
-                    "'2018-06-10', 'BRONZE', 1)");
+                    "'2018-06-10', 10, 1)");
             statement.executeUpdate("INSERT INTO user_role(user_id, role) VALUES (1, 0), (1, 1)");
         } catch (ConnectionPoolException | SQLException e) {
             e.printStackTrace();

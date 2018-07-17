@@ -1,6 +1,7 @@
 package by.z1max.service;
 
 import by.z1max.dao.RatingDao;
+import by.z1max.dao.UserDao;
 import by.z1max.exception.DaoException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Rating;
@@ -10,9 +11,11 @@ import static by.z1max.util.ValidationUtil.checkNotFound;
 public class RatingServiceImpl implements RatingService {
 
     private RatingDao ratingDao;
+    private UserDao userDao;
 
-    public RatingServiceImpl(RatingDao ratingDao) {
+    public RatingServiceImpl(RatingDao ratingDao, UserDao userDao) {
         this.ratingDao = ratingDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -30,7 +33,9 @@ public class RatingServiceImpl implements RatingService {
             throw new ServiceException("Rating must be between 1 and 10");
         }
         try {
-            return ratingDao.create(rating);
+            Rating result = ratingDao.create(rating);
+            userDao.addPoints(rating.getUserId(), 1);
+            return result;
         } catch (DaoException e) {
             throw new ServiceException("Error creating rating", e);
         }

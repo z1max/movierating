@@ -17,17 +17,18 @@ import java.util.Set;
 
 public class UserDaoImpl implements UserDao {
 
-    private static final String FIND_BY_ID = "SELECT id, username, email, password, registered, status, enabled, group_concat(role SEPARATOR ',') AS roles " +
+    private static final String FIND_BY_ID = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles " +
             "FROM movie_rating.user JOIN user_role ON id = user_id WHERE id = ?";
-    private static final String FIND_BY_EMAIL = "SELECT id, username, email, password, registered, status, enabled, group_concat(role SEPARATOR ',') AS roles " +
+    private static final String FIND_BY_EMAIL = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles " +
             "FROM movie_rating.user JOIN user_role ON id = user_id WHERE email = ?";
-    private static final String FIND_ALL = "SELECT id, username, email, password, registered, status, enabled, group_concat(role SEPARATOR ',') AS roles" +
+    private static final String FIND_ALL = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles" +
             " FROM user JOIN user_role ON id = user_id GROUP BY username;";
     private static final String DELETE = "DELETE FROM movie_rating.user WHERE id = ?";
     private static final String DELETE_ROLES = "DELETE FROM movie_rating.user_role WHERE user_id = ?";
-    private static final String CREATE = "INSERT INTO movie_rating.user(username, email, password, registered, status, enabled) VALUES (?,?,?,?,?,?)";
+    private static final String CREATE = "INSERT INTO movie_rating.user(username, email, password, registered, points, enabled) VALUES (?,?,?,?,?,?)";
     private static final String CREATE_ROLES = "INSERT INTO movie_rating.user_role(user_id, role) VALUES (?,?)";
-    private static final String UPDATE = "UPDATE movie_rating.user SET username=?, email=?, password=?, registered=?, status=?, enabled=? WHERE id =?";
+    private static final String UPDATE = "UPDATE movie_rating.user SET username=?, email=?, password=?, registered=?, points=?, enabled=? WHERE id =?";
+    private static final String ADD_POINTS = "UPDATE user SET points=points+? WHERE id=?";
 
     private DataSource dataSource;
 
@@ -45,8 +46,7 @@ public class UserDaoImpl implements UserDao {
             statement = connection.prepareStatement(FIND_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
-            User user = map(resultSet);
-            return user;
+            return map(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
             throw new DaoException("Error finding user by id", e);
         } finally {
@@ -64,8 +64,7 @@ public class UserDaoImpl implements UserDao {
             statement = connection.prepareStatement(FIND_BY_EMAIL);
             statement.setString(1, email);
             resultSet = statement.executeQuery();
-            User user = map(resultSet);
-            return user;
+            return map(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
             throw new DaoException("Error finding user by email", e);
         } finally {
@@ -82,8 +81,7 @@ public class UserDaoImpl implements UserDao {
             connection = dataSource.getConnection();
             statement = connection.createStatement();
             resultSet = statement.executeQuery(FIND_ALL);
-            List<User> users = mapUserList(resultSet);
-            return users;
+            return mapUserList(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
             throw new DaoException("Error finding all users", e);
         } finally {
@@ -98,6 +96,23 @@ public class UserDaoImpl implements UserDao {
             return create(user);
         } else {
             return update(user);
+        }
+    }
+
+    @Override
+    public boolean addPoints(int userId, int points) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(ADD_POINTS);
+            statement.setInt(1, points);
+            statement.setInt(2, userId);
+            return statement.executeUpdate() == 1;
+        } catch (ConnectionPoolException | SQLException e) {
+            throw new DaoException("Error adding points", e);
+        } finally {
+            dataSource.releaseConnection(connection, statement, null);
         }
     }
 
@@ -153,10 +168,10 @@ public class UserDaoImpl implements UserDao {
         String email = resultSet.getString("email");
         String password = resultSet.getString("password");
         LocalDate registered = resultSet.getDate("registered").toLocalDate();
-        UserStatus status = UserStatus.valueOf(resultSet.getString("status"));
+        int points = resultSet.getInt("points");
         boolean enabled = resultSet.getBoolean("enabled");
         String roles = resultSet.getString("roles");
-        user = new User(id, username, email, password, registered, status, enabled);
+        user = new User(id, username, email, password, registered, points, enabled);
         user.setRoles(mapRoles(roles));
         return user;
     }
@@ -261,7 +276,7 @@ public class UserDaoImpl implements UserDao {
         statement.setString(2, user.getEmail());
         statement.setString(3, user.getPassword());
         statement.setDate(4, Date.valueOf(user.getRegistered()));
-        statement.setString(5, user.getStatus().toString());
+        statement.setInt(5, user.getPoints());
         statement.setInt(6, user.isEnabled() ? 1 : 0);
     }
 }

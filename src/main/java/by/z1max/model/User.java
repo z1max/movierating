@@ -9,18 +9,24 @@ public class User extends BaseEntity {
     private String email;
     private String password;
     private LocalDate registered;
-    private UserStatus status;
+    private int points;
     private boolean enabled;
     private Set<Role> roles;
 
-    public User(Integer id, String username, String email, String password, LocalDate registered, UserStatus status, boolean enabled) {
+    public User(Integer id, String username, String email, String password, LocalDate registered, int points, boolean enabled) {
         super(id);
         this.username = username;
         this.email = email;
         this.password = password;
         this.registered = registered;
-        this.status = status;
+        this.points = points;
         this.enabled = enabled;
+    }
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -55,12 +61,16 @@ public class User extends BaseEntity {
         this.registered = registered;
     }
 
-    public UserStatus getStatus() {
-        return status;
+    public int getPoints() {
+        return points;
     }
 
-    public void setStatus(UserStatus status) {
-        this.status = status;
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public UserStatus getStatus() {
+        return UserStatus.getStatus(this.points);
     }
 
     public boolean isEnabled() {
@@ -94,13 +104,13 @@ public class User extends BaseEntity {
                 Objects.equals(password, user.password) &&
                 Objects.equals(registered, user.registered) &&
                 enabled == user.enabled &&
-                status == user.status &&
+                points == user.points &&
                 Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, email, password, registered, status, enabled, roles);
+        return Objects.hash(username, email, password, registered, points, enabled, roles);
     }
 
     @Override
@@ -111,7 +121,7 @@ public class User extends BaseEntity {
         sb.append(", email='").append(email).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append(", registered=").append(registered);
-        sb.append(", status=").append(status);
+        sb.append(", points=").append(points);
         sb.append(", enabled=").append(enabled);
         sb.append(", roles=").append(roles);
         sb.append('}');

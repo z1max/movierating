@@ -21,7 +21,7 @@ public class SignupCommand extends Command {
             String username = request.getParameter("username");
             String email = request.getParameter("email");
             String password = request.getParameter("password");
-            User user = new User(null, username, email, password, null, null, true);
+            User user = new User(username, email, password);
 
             try {
                 service.save(user);

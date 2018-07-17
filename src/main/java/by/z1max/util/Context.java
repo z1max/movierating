@@ -27,8 +27,8 @@ public class Context {
         userDao = new UserDaoImpl(dataSource);
 
         movieService = new MovieServiceImpl(movieDao, ratingDao, reviewDao);
-        ratingService = new RatingServiceImpl(ratingDao);
-        reviewService = new ReviewServiceImpl(reviewDao);
+        ratingService = new RatingServiceImpl(ratingDao, userDao);
+        reviewService = new ReviewServiceImpl(reviewDao, userDao);
         userService = new UserServiceImpl(userDao, passwordEncoder);
     }
 

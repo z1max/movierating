@@ -4,7 +4,6 @@ import by.z1max.dao.UserDao;
 import by.z1max.exception.DaoException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.User;
-import by.z1max.model.UserStatus;
 import by.z1max.util.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -67,8 +66,9 @@ public class UserServiceImpl implements UserService {
             user.setRegistered(LocalDate.now());
         }
         if (user.getStatus() == null){
-            user.setStatus(UserStatus.NEW);
+            user.setPoints(0);
         }
+        user.setEnabled(true);
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         try {
