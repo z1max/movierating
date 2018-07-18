@@ -5,7 +5,7 @@ import by.z1max.model.Review;
 import java.util.Date;
 import java.util.List;
 
-public class EagerMovie extends BaseMovie {
+public class EagerMovie extends LazyMovie {
     private int budget;
     private String description;
     private List<Review> reviews;
