@@ -1,12 +1,15 @@
 package by.z1max.util.db;
 
 import by.z1max.exception.ConnectionPoolException;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DataSource {
+    private static final Logger LOG = Logger.getLogger(DataSource.class);
+    
     private static volatile DataSource instance;
     private ConnectionPool pool;
 
@@ -15,7 +18,7 @@ public class DataSource {
         try {
             pool.init();
         } catch (ConnectionPoolException e) {
-            e.printStackTrace();
+            LOG.error("Error instantiating datasource");
         }
     }
 
@@ -30,14 +33,28 @@ public class DataSource {
         return instance;
     }
 
-    public Connection getConnection() throws ConnectionPoolException {
-        return pool.take();
+    public Connection getConnection(boolean autoCommit) throws ConnectionPoolException {
+        return pool.take(autoCommit);
     }
 
     public boolean releaseConnection(Connection connection, Statement statement, ResultSet resultSet){
         boolean result = false;
         pool.close(statement, resultSet);
         if (connection != null) {
+            result = pool.release(connection);
+        }
+        return result;
+    }
+    
+    public void rollback(Connection connection) {
+        pool.rollback(connection);
+    }
+    
+    
+    public boolean releaseConnection(Connection connection, Statement statement){
+        boolean result = false;
+        pool.close(statement);
+        if (connection !=null){
             result = pool.release(connection);
         }
         return result;

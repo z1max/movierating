@@ -53,15 +53,21 @@ public final class ConnectionPool {
         }
     }
 
-    public Connection take() throws ConnectionPoolException {
+    public Connection take(boolean autoCommit) throws ConnectionPoolException {
         LOG.debug("Taking connection from pool.");
         Connection connection;
         try {
             connection = connectionQueue.take();
+            if (!autoCommit){
+                connection.setAutoCommit(false);
+            }
             givenAwayQueue.add(connection);
         } catch (InterruptedException e) {
             LOG.error("Error connection to the data source.", e);
             throw new ConnectionPoolException("Error connection to the data source.", e);
+        } catch (SQLException e) {
+            LOG.error("Error getting transactional connection", e);
+            throw new ConnectionPoolException("Error getting transactional connection", e);
         }
         return connection;
     }
@@ -69,13 +75,39 @@ public final class ConnectionPool {
     public boolean release(Connection connection){
         LOG.debug("Releasing connection.");
         if (connection != null){
-            givenAwayQueue.remove(connection);
-            connectionQueue.add(connection);
-            return true;
+            try {
+                if (!connection.getAutoCommit()){
+                    connection.commit();
+                    connection.setAutoCommit(true);
+                }
+                givenAwayQueue.remove(connection);
+                connectionQueue.add(connection);
+                return true;
+            } catch (SQLException e) {
+                LOG.error("Connection commit failure", e);
+            }
         }
         return false;
     }
+    
+    public void rollback(Connection connection){
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            LOG.error("Connection rollback failure", e);
+        }
+    }
 
+    public void close(Statement statement){
+        if (statement != null){
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                LOG.error("Error closing statement", e);
+            }
+        }  
+    }
+    
     public void close(Statement statement, ResultSet resultSet){
         if (resultSet != null){
             try {
@@ -84,13 +116,7 @@ public final class ConnectionPool {
                 LOG.error("Error closing ResultSet", e);
             }
         }
-        if (statement != null){
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                LOG.error("Error closing Statement", e);
-            }
-        }
+        close(statement);
     }
 
     private void closeConnectionQueue(BlockingQueue<Connection> queue) throws SQLException {

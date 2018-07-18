@@ -6,6 +6,7 @@ import by.z1max.model.Country;
 import by.z1max.model.Genre;
 import by.z1max.model.Movie;
 import by.z1max.util.db.DataSource;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 public class MovieDaoImpl implements MovieDao {
+    private static final Logger LOG = Logger.getLogger(MovieDaoImpl.class);
 
     private static final String FIND_BY_ID = "SELECT id, title, director, release_date, budget, description, runtime, group_concat(genre SEPARATOR ',') AS genres" +
             " FROM movie JOIN genre ON id = genre.movie_id WHERE id = ?";
@@ -41,7 +43,7 @@ public class MovieDaoImpl implements MovieDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.prepareStatement(FIND_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -55,7 +57,8 @@ public class MovieDaoImpl implements MovieDao {
             movie.setCountries(mapCountries(resultSet));
             return movie;
         } catch (ConnectionPoolException | SQLException e) {
-            throw new DaoException("Error finding movie by id", e);
+            LOG.error("Error finding movie by id = " + id, e);
+            throw new DaoException("Error finding movie by id = " + id, e);
         } finally {
             dataSource.releaseConnection(connection, statement, resultSet);
         }
@@ -72,7 +75,7 @@ public class MovieDaoImpl implements MovieDao {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(FIND_ALL);
             List<Movie> movies = mapMovieList(resultSet);
@@ -86,6 +89,7 @@ public class MovieDaoImpl implements MovieDao {
             preparedStatement.close();
             return movies;
         } catch (ConnectionPoolException | SQLException e) {
+            LOG.error("Error finding all movies", e);
             throw new DaoException("Error finding all movies", e);
         } finally {
             dataSource.releaseConnection(connection, statement, resultSet);
@@ -97,15 +101,16 @@ public class MovieDaoImpl implements MovieDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.prepareStatement(DELETE);
             statement.setInt(1, id);
             int rows = statement.executeUpdate();
             return rows == 1;
         } catch (ConnectionPoolException | SQLException e) {
-            throw new DaoException("Error deleting movie", e);
+            LOG.error("Error deleting movie with id = " + id, e);
+            throw new DaoException("Error deleting movie with id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, null);
+            dataSource.releaseConnection(connection, statement);
         }
     }
 
@@ -115,6 +120,90 @@ public class MovieDaoImpl implements MovieDao {
             return create(movie);
         } else {
             return update(movie);
+        }
+    }
+
+    private Movie create(Movie movie) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection(false);
+            statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
+            setFields(movie, statement);
+
+            int rows = statement.executeUpdate();
+            if (rows == 0){
+                throw new SQLException("Error creating movie");
+            }
+
+            resultSet = statement.getGeneratedKeys();
+            resultSet.first();
+            int id = resultSet.getInt(1);
+
+            for (Genre genre : movie.getGenres()) {
+                statement = connection.prepareStatement(CREATE_GENRES);
+                statement.setInt(1, id);
+                statement.setInt(2, genre.ordinal());
+                statement.executeUpdate();
+            }
+            for (Country country : movie.getCountries()) {
+                statement = connection.prepareStatement(CREATE_COUNTRIES);
+                statement.setInt(1, id);
+                statement.setString(2, country.toString());
+                statement.executeUpdate();
+            }
+            movie.setId(id);
+            return movie;
+        } catch (ConnectionPoolException | SQLException e) {
+            dataSource.rollback(connection);
+            LOG.error("Error creating movie: " + movie, e);
+            throw new DaoException("Error creating movie: " + movie, e);
+        } finally {
+            dataSource.releaseConnection(connection, statement, resultSet);
+        }
+    }
+
+    private Movie update(Movie movie) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection(false);
+            statement = connection.prepareStatement(UPDATE);
+            setFields(movie, statement);
+            statement.setInt(7, movie.getId());
+
+            int rows = statement.executeUpdate();
+            if (rows == 0) {
+                throw new SQLException("Error creating movie");
+            }
+
+            statement = connection.prepareStatement(DELETE_GENRES);
+            statement.setInt(1, movie.getId());
+            statement.executeUpdate();
+            statement = connection.prepareStatement(DELETE_COUNTRIES);
+            statement.setInt(1, movie.getId());
+            statement.executeUpdate();
+
+            for (Genre genre : movie.getGenres()) {
+                statement = connection.prepareStatement(CREATE_GENRES);
+                statement.setInt(1, movie.getId());
+                statement.setInt(2, genre.ordinal());
+                statement.executeUpdate();
+            }
+            for (Country country : movie.getCountries()) {
+                statement = connection.prepareStatement(CREATE_COUNTRIES);
+                statement.setInt(1, movie.getId());
+                statement.setString(2, country.toString());
+                statement.executeUpdate();
+            }
+            return movie;
+        }  catch (SQLException | ConnectionPoolException e) {
+            dataSource.rollback(connection);
+            LOG.error("Error updating movie: " + movie, e);
+            throw new DaoException("Error updating movie: " + movie, e);
+        } finally {
+            dataSource.releaseConnection(connection, statement);
         }
     }
 
@@ -169,102 +258,6 @@ public class MovieDaoImpl implements MovieDao {
             result.add(Country.valueOf(name));
         }
         return result;
-    }
-
-    private Movie create(Movie movie) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
-            setFields(movie, statement);
-            int rows = statement.executeUpdate();
-            
-            if (rows == 0){
-                throw new SQLException("Error creating movie");
-            }
-            
-            resultSet = statement.getGeneratedKeys();
-            resultSet.first();
-            int id = resultSet.getInt(1);
-
-            for (Genre genre : movie.getGenres()) {
-                statement = connection.prepareStatement(CREATE_GENRES);
-                statement.setInt(1, id);
-                statement.setInt(2, genre.ordinal());
-                statement.executeUpdate();
-            }
-            for (Country country : movie.getCountries()) {
-                statement = connection.prepareStatement(CREATE_COUNTRIES);
-                statement.setInt(1, id);
-                statement.setString(2, country.toString());
-                statement.executeUpdate();
-            }
-            movie.setId(id);
-            connection.commit();
-            connection.setAutoCommit(true);
-            return movie;
-        } catch (ConnectionPoolException | SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                //TODO
-            }
-            throw new DaoException("Error creating movie", e);
-        } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
-        }
-    }
-    
-    private Movie update(Movie movie) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.prepareStatement(UPDATE);
-            setFields(movie, statement);
-            statement.setInt(7, movie.getId());
-
-            int rows = statement.executeUpdate();
-
-            if (rows == 0) {
-                throw new SQLException("Error creating movie");
-            }
-
-            statement = connection.prepareStatement(DELETE_GENRES);
-            statement.setInt(1, movie.getId());
-            statement.executeUpdate();
-            statement = connection.prepareStatement(DELETE_COUNTRIES);
-            statement.setInt(1, movie.getId());
-            statement.executeUpdate();
-
-            for (Genre genre : movie.getGenres()) {
-                statement = connection.prepareStatement(CREATE_GENRES);
-                statement.setInt(1, movie.getId());
-                statement.setInt(2, genre.ordinal());
-                statement.executeUpdate();
-            }
-            for (Country country : movie.getCountries()) {
-                statement = connection.prepareStatement(CREATE_COUNTRIES);
-                statement.setInt(1, movie.getId());
-                statement.setString(2, country.toString());
-                statement.executeUpdate();
-            }
-            connection.commit();
-            connection.setAutoCommit(true);
-            return movie;
-        }  catch (SQLException | ConnectionPoolException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                //TODO
-            }
-            throw new DaoException("Error updating movie", e);
-        } 
     }
     
     private void setFields(Movie movie, PreparedStatement statement) throws SQLException {

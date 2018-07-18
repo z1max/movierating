@@ -4,9 +4,8 @@ import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.DaoException;
 import by.z1max.model.Role;
 import by.z1max.model.User;
-import by.z1max.model.UserStatus;
-import by.z1max.util.db.ConnectionPool;
 import by.z1max.util.db.DataSource;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 public class UserDaoImpl implements UserDao {
+    private static final Logger LOG = Logger.getLogger(UserDaoImpl.class);
 
     private static final String FIND_BY_ID = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles " +
             "FROM movie_rating.user JOIN user_role ON id = user_id WHERE id = ?";
@@ -42,15 +42,17 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.prepareStatement(FIND_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             return map(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
-            throw new DaoException("Error finding user by id", e);
+            LOG.error("Error finding user by id = " + id, e);
+            throw new DaoException("Error finding user by id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            LOG.debug("Connection released: " + released);
         }
     }
 
@@ -60,15 +62,17 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.prepareStatement(FIND_BY_EMAIL);
             statement.setString(1, email);
             resultSet = statement.executeQuery();
             return map(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
-            throw new DaoException("Error finding user by email", e);
+            LOG.error("Error finding user by email = " + email, e);
+            throw new DaoException("Error finding user by email = " + email, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            LOG.debug("Connection released: " + released);
         }
     }
 
@@ -78,20 +82,21 @@ public class UserDaoImpl implements UserDao {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(FIND_ALL);
             return mapUserList(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
+            LOG.error("Error finding all users", e);
             throw new DaoException("Error finding all users", e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            LOG.debug("Connection released: " + released);
         }
     }
 
     @Override
     public User save(User user) throws DaoException {
-
         if (user.isNew()){
             return create(user);
         } else {
@@ -104,15 +109,17 @@ public class UserDaoImpl implements UserDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.prepareStatement(ADD_POINTS);
             statement.setInt(1, points);
             statement.setInt(2, userId);
             return statement.executeUpdate() == 1;
         } catch (ConnectionPoolException | SQLException e) {
-            throw new DaoException("Error adding points", e);
+            LOG.error("Error adding " + points + " points to user with id = " + userId, e);
+            throw new DaoException("Error adding " + points + " points to user with id = " + userId, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, null);
+            boolean released = dataSource.releaseConnection(connection, statement);
+            LOG.debug("Connection released: " + released);
         }
     }
 
@@ -121,7 +128,7 @@ public class UserDaoImpl implements UserDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(false);
             Statement checkForKeys = connection.createStatement();
             checkForKeys.executeUpdate("SET FOREIGN_KEY_CHECKS=0");
             statement = connection.prepareStatement(DELETE);
@@ -134,9 +141,82 @@ public class UserDaoImpl implements UserDao {
             checkForKeys.close();
             return rows == 1;
         } catch (ConnectionPoolException | SQLException e) {
-            throw new DaoException("Error deleting user", e);
+            dataSource.rollback(connection);
+            LOG.error("Error deleting user with id = " + id);
+            throw new DaoException("Error deleting user with id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, null);
+            boolean released = dataSource.releaseConnection(connection, statement);
+            LOG.debug("Connection released: " + released);
+        }
+    }
+
+    private User create(User user) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection(false);
+            statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
+            setFields(user, statement);
+
+            int rows = statement.executeUpdate();
+            if (rows == 0){
+                throw new SQLException("Error creating user");
+            }
+
+            resultSet = statement.getGeneratedKeys();
+            resultSet.first();
+            int id = resultSet.getInt(1);
+
+            for (Role role : user.getRoles()) {
+                statement = connection.prepareStatement(CREATE_ROLES);
+                statement.setInt(1, id);
+                statement.setInt(2, role.ordinal());
+                statement.executeUpdate();
+            }
+
+            user.setId(id);
+            return user;
+        } catch (ConnectionPoolException | SQLException e) {
+            dataSource.rollback(connection);
+            throw new DaoException("Error creating user: " + user, e);
+        } finally {
+            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            LOG.debug("Connection released: " + released);
+        }
+    }
+
+    private User update(User user) throws DaoException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dataSource.getConnection(false);
+            statement = connection.prepareStatement(UPDATE);
+
+            setFields(user, statement);
+            statement.setInt(7, user.getId());
+            int rows = statement.executeUpdate();
+
+            if (rows == 0){
+                throw new SQLException("Error updating user");
+            }
+            statement = connection.prepareStatement(DELETE_ROLES);
+            statement.setInt(1, user.getId());
+            statement.executeUpdate();
+
+            for (Role role : user.getRoles()) {
+                statement = connection.prepareStatement(CREATE_ROLES);
+                statement.setInt(1, user.getId());
+                statement.setInt(2, role.ordinal());
+                statement.executeUpdate();
+            }
+            return user;
+        } catch (ConnectionPoolException | SQLException e) {
+            dataSource.rollback(connection);
+            throw new DaoException("Error updating user: " + user, e);
+        } finally {
+            boolean released = dataSource.releaseConnection(connection, statement);
+            LOG.debug("Connection released: " + released);
         }
     }
 
@@ -184,91 +264,6 @@ public class UserDaoImpl implements UserDao {
             result.add(current);
         }
         return result;
-    }
-
-    private User create(User user) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
-
-            setFields(user, statement);
-
-            int rows = statement.executeUpdate();
-
-            if (rows == 0){
-                throw new SQLException("Error creating user.");
-            }
-            resultSet = statement.getGeneratedKeys();
-            resultSet.first();
-            int id = resultSet.getInt(1);
-
-            for (Role role : user.getRoles()) {
-                statement = connection.prepareStatement(CREATE_ROLES);
-                statement.setInt(1, id);
-                statement.setInt(2, role.ordinal());
-                statement.executeUpdate();
-            }
-
-            user.setId(id);
-            connection.commit();
-            connection.setAutoCommit(true);
-            return user;
-        } catch (ConnectionPoolException | SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                //TODO log
-            }
-            throw new DaoException("Error creating user", e);
-        } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
-        }
-    }
-
-    private User update(User user) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.prepareStatement(UPDATE);
-
-            setFields(user, statement);
-            statement.setInt(7, user.getId());
-            int rows = statement.executeUpdate();
-
-            if (rows == 0){
-                throw new SQLException("Error updating user");
-            }
-            statement = connection.prepareStatement(DELETE_ROLES);
-            statement.setInt(1, user.getId());
-            statement.executeUpdate();
-
-            for (Role role : user.getRoles()) {
-                statement = connection.prepareStatement(CREATE_ROLES);
-                statement.setInt(1, user.getId());
-                statement.setInt(2, role.ordinal());
-                statement.executeUpdate();
-            }
-
-            connection.commit();
-            connection.setAutoCommit(true);
-            return user;
-        } catch (ConnectionPoolException | SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                //TODO log
-            }
-            throw new DaoException("Error updating user", e);
-        } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
-        }
     }
 
     private void setFields(User user, PreparedStatement statement) throws SQLException {
