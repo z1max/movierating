@@ -1,8 +1,7 @@
 package by.z1max.util;
 
-import by.z1max.dto.BaseMovie;
-import by.z1max.dto.EagerMovie;
 import by.z1max.dto.LazyMovie;
+import by.z1max.dto.EagerMovie;
 import by.z1max.model.Country;
 import by.z1max.model.Genre;
 import by.z1max.model.Movie;
@@ -33,7 +32,7 @@ public class MovieUtil {
         return eagerMovie;
     }
 
-    private static <T extends BaseMovie> void getCommonFields(T instance, Movie movie){
+    private static <T extends LazyMovie> void getCommonFields(T instance, Movie movie){
         instance.setId(movie.getId());
         instance.setTitle(movie.getTitle());
         instance.setDirector(movie.getDirector());
