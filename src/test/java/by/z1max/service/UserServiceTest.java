@@ -130,14 +130,14 @@ public class UserServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(false);
             statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM user WHERE id = 6");
             statement.executeUpdate("ALTER TABLE user AUTO_INCREMENT = 6");
         } catch (ConnectionPoolException | SQLException e) {
-            e.printStackTrace();
+            dataSource.rollback(connection);
         } finally {
-            dataSource.releaseConnection(connection, statement, null);
+            dataSource.releaseConnection(connection, statement);
         }
     }
 
@@ -145,16 +145,16 @@ public class UserServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(false);
             statement = connection.createStatement();
             statement.executeUpdate("INSERT INTO user(id, username, email, password, registered, points, enabled)" +
                     " VAlUES (1, 'admin', 'admin@gmail.com', '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca'," +
                     "'2018-06-10', 10, 1)");
             statement.executeUpdate("INSERT INTO user_role(user_id, role) VALUES (1, 0), (1, 1)");
         } catch (ConnectionPoolException | SQLException e) {
-            e.printStackTrace();
+            dataSource.rollback(connection);
         } finally {
-            dataSource.releaseConnection(connection, statement, null);
+            dataSource.releaseConnection(connection, statement);
         }
     }
 }

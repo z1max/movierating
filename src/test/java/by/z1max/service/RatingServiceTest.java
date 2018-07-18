@@ -77,13 +77,13 @@ public class RatingServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection();
+            connection = dataSource.getConnection(true);
             statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM rating WHERE user_id = 1 AND movie_id = 14");
-        } catch (ConnectionPoolException | SQLException e) {
-            e.printStackTrace();
+        } catch (ConnectionPoolException | SQLException ignored) {
+
         } finally {
-            dataSource.releaseConnection(connection, statement, null);
+            dataSource.releaseConnection(connection, statement);
         }
     }
 }
