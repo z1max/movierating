@@ -8,11 +8,9 @@ import by.z1max.util.db.DataSource;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserDaoImpl implements UserDao {
     private static final Logger LOG = Logger.getLogger(UserDaoImpl.class);
@@ -37,7 +35,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findById(int id) throws DaoException {
+    public Optional<User> findById(int id) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -57,7 +55,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findByEmail(String email) throws DaoException {
+    public Optional<User> findByEmail(String email) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -220,13 +218,13 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private User map(ResultSet resultSet) throws SQLException {
-        User user;
+    private Optional<User> map(ResultSet resultSet) throws SQLException {
+        Optional<User> user;
         resultSet.first();
         try {
-            user = mapFields(resultSet);
+            user = Optional.of(mapFields(resultSet));
         } catch (NullPointerException e){
-            user = null;
+            user = Optional.empty();
         }
         return user;
     }

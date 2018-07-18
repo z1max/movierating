@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class RatingDaoImpl implements RatingDao {
     private final static Logger LOG = Logger.getLogger(RatingDaoImpl.class);
@@ -25,7 +26,7 @@ public class RatingDaoImpl implements RatingDao {
     }
 
     @Override
-    public Rating findById(int userId, int movieId) throws DaoException {
+    public Optional<Rating> findById(int userId, int movieId) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -87,14 +88,16 @@ public class RatingDaoImpl implements RatingDao {
         statement.setByte(3, rating.getRating());
     }
 
-    private Rating map(ResultSet resultSet) throws SQLException {
+    private Optional<Rating> map(ResultSet resultSet) throws SQLException {
+        Optional<Rating> result = Optional.empty();
         if (!resultSet.isBeforeFirst()){
-            return null;
+            return result;
         }
         resultSet.first();
         int userId = resultSet.getInt("user_id");
         int movieId = resultSet.getInt("movie_id");
         byte rating = resultSet.getByte("rating");
-        return new Rating(userId, movieId, rating);
+        result = Optional.of(new Rating(userId, movieId, rating));
+        return result;
     }
 }

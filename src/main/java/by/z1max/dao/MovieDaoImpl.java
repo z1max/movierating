@@ -9,11 +9,9 @@ import by.z1max.util.db.DataSource;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MovieDaoImpl implements MovieDao {
     private static final Logger LOG = Logger.getLogger(MovieDaoImpl.class);
@@ -38,7 +36,7 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Movie findById(int id) throws DaoException {
+    public Optional<Movie> findById(int id) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -47,14 +45,14 @@ public class MovieDaoImpl implements MovieDao {
             statement = connection.prepareStatement(FIND_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
-            Movie movie = map(resultSet);
-            if (movie == null){
-                return null;
+            Optional<Movie> movie = map(resultSet);
+            if (!movie.isPresent()){
+                return movie;
             }
             statement = connection.prepareStatement(FIND_COUNTRIES_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
-            movie.setCountries(mapCountries(resultSet));
+            movie.get().setCountries(mapCountries(resultSet));
             return movie;
         } catch (ConnectionPoolException | SQLException e) {
             LOG.error("Error finding movie by id = " + id, e);
@@ -62,11 +60,6 @@ public class MovieDaoImpl implements MovieDao {
         } finally {
             dataSource.releaseConnection(connection, statement, resultSet);
         }
-    }
-
-    @Override
-    public Movie findByTitle(String title) {
-        return null;
     }
 
     @Override
@@ -207,13 +200,13 @@ public class MovieDaoImpl implements MovieDao {
         }
     }
 
-    private Movie map(ResultSet resultSet) throws SQLException {
-        Movie movie;
+    private Optional<Movie> map(ResultSet resultSet) throws SQLException {
+        Optional<Movie> movie;
         resultSet.first();
         try{
-            movie = mapFields(resultSet);
+            movie = Optional.of(mapFields(resultSet));
         } catch (NullPointerException e){
-            movie = null;
+            movie = Optional.empty();
         }
         return movie;
     }
