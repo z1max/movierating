@@ -12,7 +12,6 @@
                 <%@ include file="fragments/error.jsp"%>
             </div>
         </section>
-        <%@ include file="fragments/footer.jsp"%>
     </body>
 </html>
 
