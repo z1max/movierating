@@ -13,20 +13,18 @@ import java.io.IOException;
 public class DeleteAccountCommand extends Command {
     @Override
     public void process(Context context) throws ServletException, IOException {
-        PasswordEncoder passwordEncoder = context.getPasswordEncoder();
         UserService service = context.getUserService();
 
         ActiveUser activeUser = (ActiveUser) request.getSession(false).getAttribute("activeUser");
         String enteredPassword = request.getParameter("password");
 
         try {
-            User user = service.get(activeUser.getId());
-            if (!user.getPassword().equals(passwordEncoder.encode(enteredPassword))){
-                throw new ServiceException("Password is incorrect!");
-            }
+            User user = service.loadUserByIdAndPassword(activeUser.getId(), enteredPassword);
             service.delete(user);
+            response.sendRedirect(request.getContextPath());
         } catch (ServiceException e) {
-            request.setAttribute("errorMessage", e);
+            request.setAttribute("errorMessageKey", e.getMessage());
+            forward("unknown");
         }
     }
 }

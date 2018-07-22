@@ -15,7 +15,8 @@ public class AdminPageCommand extends Command {
             request.setAttribute("users", service.getAll());
             forward("admin");
         } catch (ServiceException e) {
-            e.printStackTrace();
+            request.setAttribute("errorMessageKey", e.getMessage());
+            forward("admin");
         }
     }
 }

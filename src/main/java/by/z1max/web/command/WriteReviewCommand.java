@@ -17,13 +17,13 @@ public class WriteReviewCommand extends Command {
         ActiveUser activeUser = (ActiveUser) request.getSession(false).getAttribute("activeUser");
         String comment = request.getParameter("review");
         int movieId = Integer.valueOf(request.getParameter("movieId"));
-        Review review = new Review(null, activeUser.getId(), null, movieId, comment, null);
+        Review review = new Review(activeUser.getId(), movieId, comment);
 
         try {
             service.create(review);
-            response.sendRedirect("front?command=Details&id=" + movieId);
         } catch (ServiceException e) {
-            e.printStackTrace();
+            request.setAttribute("errorMessageKey", e.getMessage());
         }
+        response.sendRedirect("front?command=Details&id=" + movieId);
     }
 }

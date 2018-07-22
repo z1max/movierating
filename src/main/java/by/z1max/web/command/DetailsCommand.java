@@ -27,7 +27,7 @@ public class DetailsCommand extends Command {
                 request.setAttribute("userRating", rating);
             }
         } catch (ServiceException e) {
-            request.setAttribute("errorMessage", e);
+            request.setAttribute("errorMessageKey", e.getMessage());
         }
         forward("details");
     }

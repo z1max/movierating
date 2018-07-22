@@ -22,12 +22,12 @@ public class SignupCommand extends Command {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
             User user = new User(username, email, password);
-
             try {
                 service.save(user);
                 forward("signin");
             } catch (ServiceException e) {
-                request.setAttribute("errorMessage", e);
+                request.setAttribute("errorMessageKey", e.getMessage());
+                request.setAttribute("errorParam", "'" + username + "/" + email + "'");
                 forward("signup");
             }
         }

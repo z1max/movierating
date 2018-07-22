@@ -21,9 +21,9 @@ public class RateCommand extends Command {
 
         try {
             service.create(rating);
-            response.sendRedirect(request.getContextPath() + "/front?command=Details&id=" + movieId);
         } catch (ServiceException e) {
-            e.printStackTrace();
+            request.setAttribute("errorMessageKey", e.getMessage());
         }
+        response.sendRedirect(request.getContextPath() + "/front?command=Details&id=" + movieId);
     }
 }

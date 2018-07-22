@@ -8,6 +8,6 @@ import java.io.IOException;
 public class UnknownCommand extends Command {
     @Override
     public void process(Context context) throws ServletException, IOException {
-        forward("index");
+        forward("unknown");
     }
 }

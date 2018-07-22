@@ -21,15 +21,13 @@ public class ChangePasswordCommand extends Command {
         String newPassword = request.getParameter("new-password");
 
         try {
-            User user = service.get(activeUser.getId());
-            if (!user.getPassword().equals(passwordEncoder.encode(enteredPassword))){
-                throw new ServiceException("Password is incorrect!");
-            }
+            User user = service.loadUserByIdAndPassword(activeUser.getId(), enteredPassword);
             user.setPassword(newPassword);
             service.save(user);
-            response.sendRedirect("");
+            response.sendRedirect("front?command=Profile&id=" + activeUser.getId());
         } catch (ServiceException e) {
-            e.printStackTrace();
+            request.setAttribute("errorMessageKey", e.getMessage());
+            forward("unknown");
         }
     }
 }

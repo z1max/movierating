@@ -15,7 +15,7 @@ public class HomeCommand extends Command{
         try {
             request.setAttribute("movies", service.getAll());
         } catch (ServiceException e) {
-            request.setAttribute("errorMessage", e);
+            request.setAttribute("errorMessageKey", e.getMessage());
         }
         forward("home");
     }

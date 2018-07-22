@@ -23,7 +23,7 @@ public class EditMovieCommand extends Command {
                 try {
                     request.setAttribute("movie", context.getMovieService().get(Integer.parseInt(request.getParameter("movieId"))));
                 } catch (ServiceException e) {
-                    e.printStackTrace();
+                    request.setAttribute("errorMessage", e.getMessage());
                 }
             }
             forward("editMovie");
@@ -58,7 +58,8 @@ public class EditMovieCommand extends Command {
                 int id = context.getMovieService().save(movie).getId();
                 response.sendRedirect("front?command=Details&id=" + id);
             } catch (ServiceException e) {
-                e.printStackTrace();
+                request.setAttribute("errorMessage", e.getMessage());
+                forward("editMovie");
             }
 
         }

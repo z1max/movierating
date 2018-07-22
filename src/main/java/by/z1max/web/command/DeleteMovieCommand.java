@@ -12,9 +12,9 @@ public class DeleteMovieCommand extends Command {
         int id = Integer.valueOf(request.getParameter("movieId"));
         try {
             context.getMovieService().delete(id);
-            response.sendRedirect("front?command=Home");
         } catch (ServiceException e) {
-            e.printStackTrace();
+            request.setAttribute("errorMessageKey", e.getMessage());
         }
+        response.sendRedirect("front?command=Home");
     }
 }
