@@ -18,6 +18,12 @@ public class Review extends BaseEntity {
         this.date = date;
     }
 
+    public Review(int userId, int movieId, String comment) {
+        this.userId = userId;
+        this.movieId = movieId;
+        this.comment = comment;
+    }
+
     public int getUserId() {
         return userId;
     }
