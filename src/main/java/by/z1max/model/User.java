@@ -89,6 +89,10 @@ public class User extends BaseEntity {
         this.roles = roles;
     }
 
+    public void addRole(Role role){
+        this.roles.add(role);
+    }
+
     public boolean isAdmin(){
         return roles.contains(Role.ROLE_ADMIN);
     }

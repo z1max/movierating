@@ -11,13 +11,13 @@
             <div class="content">
                 <%@ include file="fragments/error.jsp" %>
                 <div class="movie-details">
-                    <h1>${movie.title}</h1>
+                    <h1 class="title">${movie.title}</h1>
                     <c:if test="${activeUser.isAdmin()}">
                         <div>
-                            <a href="front?command=EditMovie&movieId=${movie.id}"><fmt:message key="movie.edit"/></a>
-                            <form method="post" action="front?command=DeleteMovie">
+                            <a class="button button-inline" href="front?command=EditMovie&movieId=${movie.id}"><fmt:message key="movie.edit"/></a>
+                            <form class="button-inline" method="post" action="front?command=DeleteMovie">
                                 <input type="hidden" name="movieId" value="${movie.id}">
-                                <input type="submit" value="<fmt:message key="movie.delete"/>">
+                                <input class="button" type="submit" value="<fmt:message key="movie.delete"/>">
                             </form>
                         </div>
                     </c:if>
@@ -71,27 +71,26 @@
                     <h2>Comments</h2>
                     <c:forEach items="${movie.reviews}" var="review">
                         <div>
-                            <div>
-                                    ${review.username}
-                                    ${review.date}
+                            <div class="comment-head">
+                                <p class="username">${review.username}</p>
+                                <p class="date">${review.date}</p>
                             </div>
                             <div>
-                                    ${review.comment}
+                                <p>${review.comment}</p>
                             </div>
                         </div>
                         <hr/>
                     </c:forEach>
                 </div>
-                <div>
+                <div class="content-small">
                     <h2>Write review</h2>
-                    <form id="review" method="post" action="front?command=WriteReview">
+                    <textarea class="review" form="review" name="review"></textarea>
+                    <form class="form" id="review" method="post" action="front?command=WriteReview">
                         <input type="hidden" name="movieId" value="${movie.id}">
-                        <input type="submit">
+                        <input class="button" type="submit" value="<fmt:message key="submit"/>">
                     </form>
-                    <textarea form="review" name="review"></textarea>
                 </div>
             </div>
         </section>
-        <%@ include file="fragments/footer.jsp" %>
     </body>
 </html>

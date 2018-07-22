@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import static by.z1max.model.Role.ROLE_ADMIN;
 import static by.z1max.util.ValidationUtil.*;
 
 public class UserServiceImpl implements UserService {
@@ -46,6 +47,9 @@ public class UserServiceImpl implements UserService {
         User user = getByEmail(email);
         if (!user.getPassword().equals(passwordEncoder.encode(password))){
             throw new ServiceException("exception.user.password");
+        }
+        if (!user.isEnabled()){
+            throw new ServiceException("exception.user.banned");
         }
         return user;
     }
@@ -97,6 +101,28 @@ public class UserServiceImpl implements UserService {
             } else {
                 throw new ServiceException("exception.user.save");
             }
+        }
+    }
+
+    @Override
+    public void grandAdminAuthority(int id) throws ServiceException {
+        try {
+            User user = userDao.findById(id).orElseThrow(() -> new ServiceException("exception.user.notFound"));
+            user.addRole(ROLE_ADMIN);
+            userDao.save(user);
+        } catch (DaoException e) {
+            throw new ServiceException("exception.user.grandAuthority");
+        }
+    }
+
+    @Override
+    public void enable(int id) throws ServiceException {
+        try {
+            User user = userDao.findById(id).orElseThrow(() -> new ServiceException("exception.user.notFound"));
+            user.setEnabled(!user.isEnabled());
+            userDao.save(user);
+        } catch (DaoException e) {
+            throw new ServiceException("exception.user.enable");
         }
     }
 

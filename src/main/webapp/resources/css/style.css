@@ -80,6 +80,12 @@ hr {
     width: 100%;
 }
 
+.bordered {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 10px;
+}
+
 .footer {
     position: absolute;
     overflow: hidden;
@@ -104,10 +110,20 @@ hr {
     transition-duration: 0.4s;
 }
 
+.button-disabled {
+    border: 2px solid #ccc;
+    color: #ccc;
+    pointer-events: none;
+}
+
 .button-block {
     display: block;
     box-sizing: border-box;
     width: 100%;
+}
+
+.button-inline {
+    display: inline;
 }
 
 .button:hover {
@@ -155,7 +171,28 @@ hr {
     border: 1px solid black;
 }
 
-input[type=text], input[type=email], input[type=password] {
+.title {
+    font-size: 36px;
+}
+
+.username {
+    font-weight: bold;
+    display: inline;
+}
+
+.date {
+    display: inline;
+}
+
+.review {
+    width : 100%;
+    height : 250px;
+    border: 1px solid black;
+    border-radius: 3px;
+    resize: none;
+}
+
+.form input[type=text], input[type=email], input[type=password], input[type=date], input[type=number] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -165,7 +202,7 @@ input[type=text], input[type=email], input[type=password] {
     box-sizing: border-box;
 }
 
-input[type=submit] {
+.form input[type=submit] {
     width: 100%;
     cursor: pointer;
 }
@@ -185,4 +222,21 @@ input[type=submit] {
 
 .username-error, .email-error, .password-error {
     display: none;
+}
+
+table.users-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.users-table th {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+table.users-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
 }

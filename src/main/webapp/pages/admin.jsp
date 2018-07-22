@@ -9,10 +9,10 @@
         <%@ include file="fragments/header.jsp" %>
         <section>
             <div class="content">
-                <div class="button-container">
-                    <a href="front?command=EditMovie"><fmt:message key="movie.add"/></a>
+                <div class="content-full">
+                    <a class="button" href="front?command=EditMovie"><fmt:message key="movie.add"/></a>
                 </div>
-                <table>
+                <table class="users-table">
                     <thead>
                         <tr>
                             <th><fmt:message key="user.username"/></th>
@@ -21,6 +21,7 @@
                             <th><fmt:message key="user.status"/></th>
                             <th><fmt:message key="user.roles"/></th>
                             <th><fmt:message key="user.enabled"/></th>
+                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -35,7 +36,14 @@
                                 <td>${user.enabled}</td>
                                 <td>
                                     <form method="post" action="front?command=AddAdmin">
-                                        <input type="submit" value="<fmt:message key="user.makeAdmin"/>" ${user.isAdmin() ? 'disabled' : ''}>
+                                        <input type="hidden" name="userId" value="${user.id}">
+                                        <input class="button ${user.isAdmin() ? 'button-disabled' : ''}" type="submit" value="<fmt:message key="user.makeAdmin"/>" ${user.isAdmin() ? 'disabled' : ''}>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form method="post" action="front?command=EnableUser">
+                                        <input type="hidden" name="userId" value="${user.id}">
+                                        <input class="button" type="submit" value="<fmt:message key="user.enable"/>">
                                     </form>
                                 </td>
                             </tr>
@@ -44,7 +52,6 @@
                 </table>
             </div>
         </section>
-        <%@ include file="fragments/footer.jsp" %>
     </body>
 </html>
 

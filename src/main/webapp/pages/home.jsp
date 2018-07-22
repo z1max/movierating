@@ -50,6 +50,5 @@
                 </c:forEach>
             </div>
         </section>
-        <%@ include file="fragments/footer.jsp" %>
     </body>
 </html>
