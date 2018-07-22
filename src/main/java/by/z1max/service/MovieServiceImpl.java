@@ -44,28 +44,28 @@ public class MovieServiceImpl implements MovieService {
             }
             return result;
         } catch (DaoException e) {
-            throw new ServiceException("Error getting all movies", e);
+            throw new ServiceException("exception.movie.getAll", e);
         }
     }
 
     @Override
     public EagerMovie getEager(int id) throws ServiceException {
         try {
-            Movie movie = movieDao.findById(id);
+            Movie movie = movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.notFound"));
             float rating = ratingDao.getAverageRating(id);
             List<Review> reviews = reviewDao.findByMovieId(id);
             return MovieUtil.getFrom(movie, rating, reviews);
         } catch (DaoException e) {
-            throw new ServiceException("Error getting movie by id", e);
+            throw new ServiceException("exception.movie.getById", e);
         }
     }
 
     @Override
     public Movie get(int id) throws ServiceException {
         try {
-            return movieDao.findById(id);
+            return movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.getById"));
         } catch (DaoException e) {
-            throw new ServiceException("Error getting by id");
+            throw new ServiceException("exception.movie.getById");
         }
     }
 
@@ -74,7 +74,7 @@ public class MovieServiceImpl implements MovieService {
         try {
             checkNotFound(movieDao.delete(id));
         } catch (DaoException e) {
-            throw new ServiceException("Error deleting movie");
+            throw new ServiceException("exception.movie.delete");
         }
     }
 
@@ -82,18 +82,18 @@ public class MovieServiceImpl implements MovieService {
     public Movie save(Movie movie) throws ServiceException {
         Objects.requireNonNull(movie);
         if (!checkLength(movie.getTitle(), MAX_TITLE_LENGTH)){
-            throw new ServiceException("Title length must be less than " + MAX_TITLE_LENGTH);
+            throw new ServiceException("exception.movie.title");
         }
         if (!checkLength(movie.getDirector(), MAX_DIRECTOR_LENGTH)){
-            throw new ServiceException("Director length must be less than " + MAX_DIRECTOR_LENGTH);
+            throw new ServiceException("exception.movie.director");
         }
         if (!checkLength(movie.getDescription(), MAX_DESCRIPTION_LENGTH)){
-            throw new ServiceException("Description length must be less than " + MAX_DESCRIPTION_LENGTH);
+            throw new ServiceException("exception.movie.description");
         }
         try {
             return movieDao.save(movie);
         } catch (DaoException e) {
-            throw new ServiceException("Error saving movie", e);
+            throw new ServiceException("exception.movie.save", e);
         }
     }
 }

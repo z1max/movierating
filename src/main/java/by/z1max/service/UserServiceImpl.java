@@ -25,9 +25,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User get(int id) throws ServiceException {
         try {
-            return checkNotFound(userDao.findById(id));
+            return userDao.findById(id).orElseThrow(() -> new ServiceException("exception.user.notFound"));
         } catch (DaoException e) {
-            throw new ServiceException("Error getting user by id", e);
+            throw new ServiceException("exception.user.getById", e);
         }
     }
 
@@ -35,10 +35,28 @@ public class UserServiceImpl implements UserService {
     public User getByEmail(String email) throws ServiceException {
         Objects.requireNonNull(email, "email must not be null");
         try {
-            return checkNotFound(userDao.findByEmail(email));
+            return userDao.findByEmail(email).orElseThrow(() -> new ServiceException("exception.user.notFound"));
         } catch (DaoException e) {
-            throw new ServiceException("Error getting user by id", e);
+            throw new ServiceException("exception.user.getByEmail", e);
         }
+    }
+
+    @Override
+    public User loadUserByEmailAndPassword(String email, String password) throws ServiceException {
+        User user = getByEmail(email);
+        if (!user.getPassword().equals(passwordEncoder.encode(password))){
+            throw new ServiceException("exception.user.password");
+        }
+        return user;
+    }
+
+    @Override
+    public User loadUserByIdAndPassword(int id, String password) throws ServiceException {
+        User user = get(id);
+        if (!user.getPassword().equals(passwordEncoder.encode(password))){
+            throw new ServiceException("exception.user.password");
+        }
+        return user;
     }
 
     @Override
@@ -46,7 +64,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.findAll();
         } catch (DaoException e) {
-            throw new ServiceException("Error getting all users", e);
+            throw new ServiceException("exception.user.getAll", e);
         }
     }
 
@@ -54,13 +72,13 @@ public class UserServiceImpl implements UserService {
     public User save(User user) throws ServiceException {
         Objects.requireNonNull(user);
         if (!validateUsername(user.getUsername())){
-            throw new ServiceException("Username is not valid!");
+            throw new ServiceException("exception.user.username");
         }
         if (!validateEmail(user.getEmail())){
-            throw new ServiceException("Email is not valid!");
+            throw new ServiceException("exception.user.email");
         }
         if (!validatePassword(user.getPassword())){
-            throw new ServiceException("Password is not valid!");
+            throw new ServiceException("exception.user.password");
         }
         if (user.getRegistered() == null){
             user.setRegistered(LocalDate.now());
@@ -74,7 +92,11 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.save(user);
         } catch (DaoException e) {
-            throw new ServiceException("Error saving user");
+            if (e.getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")){
+                throw new ServiceException("exception.user.duplicate");
+            } else {
+                throw new ServiceException("exception.user.save");
+            }
         }
     }
 
@@ -83,7 +105,7 @@ public class UserServiceImpl implements UserService {
         try {
             checkNotFound(userDao.delete(user.getId()));
         } catch (DaoException e) {
-            throw new ServiceException("Error deleting user", e);
+            throw new ServiceException("exception.user.delete", e);
         }
     }
 }
