@@ -49,7 +49,7 @@
                                 key="user.deleteAccount"/></button>
                         <form id="delete-account" class="form hidden"
                               onsubmit="return confirm('<fmt:message key="user.sure"/>')" method="post"
-                              action="front?=command=DeleteAccount">
+                              action="front?command=DeleteAccount">
                             <label for="password"><fmt:message key="user.password"/> </label>
                             <input id="password" name="password" type="password">
                             <input type="submit" class="button" value="<fmt:message key="submit"/>">
@@ -59,7 +59,6 @@
                 </div>
             </div>
         </section>
-        <%@ include file="fragments/footer.jsp" %>
     </body>
 </html>
 
