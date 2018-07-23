@@ -12,6 +12,6 @@ public class ChangeLanguageCommand extends Command {
         HttpSession session = request.getSession();
         String language = request.getParameter("language");
         session.setAttribute("language", language);
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath());
     }
 }

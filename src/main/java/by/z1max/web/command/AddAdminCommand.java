@@ -20,6 +20,5 @@ public class AddAdminCommand extends Command {
             request.setAttribute("errorMessageKey", e.getMessage());
             forward("unknown");
         }
-
     }
 }

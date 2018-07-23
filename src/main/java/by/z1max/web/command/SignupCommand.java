@@ -2,7 +2,6 @@ package by.z1max.web.command;
 
 import by.z1max.exception.ServiceException;
 import by.z1max.model.User;
-import by.z1max.service.UserService;
 import by.z1max.util.Context;
 
 import javax.servlet.ServletException;
@@ -12,18 +11,16 @@ public class SignupCommand extends Command {
     @Override
     public void process(Context context) throws ServletException, IOException {
         String method = request.getMethod();
-        if (method.equals("GET")) {
+        if ("GET".equals(method)) {
             forward("signup");
         }
-        if (method.equals("POST")){
-            UserService service = context.getUserService();
-
+        if ("POST".equals(method)){
             String username = request.getParameter("username");
             String email = request.getParameter("email");
             String password = request.getParameter("password");
             User user = new User(username, email, password);
             try {
-                service.save(user);
+                context.getUserService().save(user);
                 forward("signin");
             } catch (ServiceException e) {
                 request.setAttribute("errorMessageKey", e.getMessage());

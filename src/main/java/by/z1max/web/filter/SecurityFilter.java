@@ -29,7 +29,7 @@ public class SecurityFilter implements Filter {
             return;
         }
         if (authorized && !activeUser.isAdmin() && hasAuthority(command, RESTRICTED_FOR_USERS)){
-            request.setAttribute("errorMessage", "Access Denied!");
+            request.setAttribute("errorMessageKey", "exception.accessDenied");
             request.getRequestDispatcher("pages/unknown.jsp").forward(request, servletResponse);
             return;
         }

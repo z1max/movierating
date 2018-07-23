@@ -13,10 +13,10 @@ public class SigninCommand extends Command {
     @Override
     public void process(Context context) throws ServletException, IOException {
         String method = request.getMethod();
-        if (method.equals("GET")){
+        if ("GET".equals(method)){
             forward("signin");
         }
-        if (method.equals("POST")){
+        if ("POST".equals(method)){
             UserService service = context.getUserService();
             String email = request.getParameter("email");
             String password = request.getParameter("password");
