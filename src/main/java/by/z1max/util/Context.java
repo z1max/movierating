@@ -59,10 +59,6 @@ public class Context {
         return userService;
     }
 
-    public PasswordEncoder getPasswordEncoder() {
-        return passwordEncoder;
-    }
-
     public void destroy(){
         dataSource.dispose();
     }

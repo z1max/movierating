@@ -1,16 +1,19 @@
 package by.z1max.util;
 
+import org.apache.log4j.Logger;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class PasswordEncoder {
+    private static final Logger LOG = Logger.getLogger(PasswordEncoder.class);
     private MessageDigest digest;
 
     public PasswordEncoder()  {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            //TODO
+            LOG.error("Error creating MessageDigest", e);
         }
     }
 
