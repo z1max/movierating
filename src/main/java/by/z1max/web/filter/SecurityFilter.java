@@ -1,6 +1,6 @@
 package by.z1max.web.filter;
 
-import by.z1max.web.ActiveUser;
+import by.z1max.dto.ActiveUser;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;

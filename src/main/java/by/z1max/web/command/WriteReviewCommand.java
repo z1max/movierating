@@ -4,7 +4,7 @@ import by.z1max.exception.ServiceException;
 import by.z1max.model.Review;
 import by.z1max.service.ReviewService;
 import by.z1max.util.Context;
-import by.z1max.web.ActiveUser;
+import by.z1max.dto.ActiveUser;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
