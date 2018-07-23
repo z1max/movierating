@@ -16,7 +16,16 @@
                 <a class="button" href="${pageContext.request.contextPath}/front?command=Signup"><fmt:message key="title.signup"/></a>
             </div>
             <div class="button-container">
-                <a class="button" href="${pageContext.request.contextPath}/front?command=Home"><fmt:message key="welcome.guest"/></a>
+                <a class="button" href="${pageContext.request.contextPath}/front?command=Home">
+                    <c:choose>
+                        <c:when test="${not empty activeUser}">
+                            <fmt:message key="welcome.movieList"/>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:message key="welcome.guest"/>
+                        </c:otherwise>
+                    </c:choose>
+                </a>
             </div>
         </section>
     </body>

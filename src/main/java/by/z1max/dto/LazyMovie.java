@@ -1,20 +1,20 @@
 package by.z1max.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class LazyMovie {
     private int id;
     private String title;
     private String director;
     private float rating;
-    private Date releaseDate;
+    private LocalDate releaseDate;
     private short runtime;
     private String genres;
     private String countries;
 
     public LazyMovie(){}
 
-    public LazyMovie(int id, String title, String director, float rating, Date releaseDate, short runtime, String genres, String countries) {
+    public LazyMovie(int id, String title, String director, float rating, LocalDate releaseDate, short runtime, String genres, String countries) {
         this.id = id;
         this.title = title;
         this.director = director;
@@ -57,11 +57,11 @@ public class LazyMovie {
         this.rating = rating;
     }
 
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 

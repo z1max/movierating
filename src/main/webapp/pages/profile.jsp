@@ -1,3 +1,4 @@
+<%@ taglib prefix="ldt" uri="WEB-INF/localDateTag.tld" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <<!doctype html>
 <html lang=${language}>
@@ -22,7 +23,7 @@
                         </tr>
                         <tr>
                             <th><fmt:message key="user.registered"/></th>
-                            <td>${user.registered}</td>
+                            <td><ldt:getFormatted localDate="${user.registered}" locale="${language}"/></td>
                         </tr>
                         <tr>
                             <th><fmt:message key="user.status"/></th>

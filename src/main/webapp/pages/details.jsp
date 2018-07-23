@@ -1,3 +1,4 @@
+<%@ taglib prefix="ldt" uri="WEB-INF/localDateTag.tld" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!doctype html>
 <html>
@@ -43,7 +44,7 @@
                         </tr>
                         <tr>
                             <th><fmt:message key="movie.releaseDate"/></th>
-                            <td><fmt:formatDate value="${movie.releaseDate}"/></td>
+                            <td><ldt:getFormatted localDate="${movie.releaseDate}" locale="${language}"/></td>
                         </tr>
                         <tr>
                             <th><fmt:message key="movie.runtime"/></th>

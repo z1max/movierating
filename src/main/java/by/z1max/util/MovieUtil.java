@@ -36,7 +36,7 @@ public class MovieUtil {
         instance.setId(movie.getId());
         instance.setTitle(movie.getTitle());
         instance.setDirector(movie.getDirector());
-        instance.setReleaseDate(asDate(movie.getReleaseDate()));
+        instance.setReleaseDate(movie.getReleaseDate());
         instance.setRuntime(movie.getRuntime());
         instance.setGenres(convertGenres(movie.getGenres()));
         instance.setCountries(convertCountries(movie.getCountries()));
