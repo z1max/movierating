@@ -8,7 +8,6 @@ import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Review;
 import by.z1max.util.db.ConnectionPool;
-import by.z1max.util.db.DataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,24 +23,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReviewServiceTest {
 
     private static ConnectionPool connectionPool;
-    private static DataSource dataSource;
     private static ReviewDao reviewDao;
     private static UserDao userDao;
     private static ReviewService service;
 
     @BeforeClass
     public static void before(){
-        connectionPool = new ConnectionPool();
-        dataSource = DataSource.getInstance(connectionPool);
-        reviewDao = new ReviewDaoImpl(dataSource);
-        userDao = new UserDaoImpl(dataSource);
+        connectionPool = ConnectionPool.getInstance();
+        reviewDao = new ReviewDaoImpl(connectionPool);
+        userDao = new UserDaoImpl(connectionPool);
         service = new ReviewServiceImpl(reviewDao, userDao);
     }
 
     @AfterClass
     public static void after(){
         connectionPool.dispose();
-        dataSource = null;
         reviewDao = null;
         service = null;
     }
@@ -73,13 +69,14 @@ public class ReviewServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = connectionPool.take(true);
             statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM review WHERE id = 21");
         } catch (ConnectionPoolException | SQLException ignored) {
 
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            connectionPool.close(statement);
+            connectionPool.release(connection);
         }
 
     }

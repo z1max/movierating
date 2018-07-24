@@ -5,7 +5,7 @@ import by.z1max.exception.DaoException;
 import by.z1max.model.Country;
 import by.z1max.model.Genre;
 import by.z1max.model.Movie;
-import by.z1max.util.db.DataSource;
+import by.z1max.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
@@ -29,10 +29,10 @@ public class MovieDaoImpl implements MovieDao {
     private static final String DELETE_GENRES = "DELETE FROM genre WHERE movie_id = ?";
     private static final String DELETE_COUNTRIES = "DELETE FROM country WHERE movie_id = ?";
 
-    private DataSource dataSource;
+    private ConnectionPool pool;
 
-    public MovieDaoImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public MovieDaoImpl(ConnectionPool pool) {
+        this.pool = pool;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MovieDaoImpl implements MovieDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(FIND_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -58,7 +58,8 @@ public class MovieDaoImpl implements MovieDao {
             LOG.error("Error finding movie by id = " + id, e);
             throw new DaoException("Error finding movie by id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.release(connection);
         }
     }
 
@@ -67,25 +68,26 @@ public class MovieDaoImpl implements MovieDao {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
+        PreparedStatement preparedStatement = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(FIND_ALL);
             List<Movie> movies = mapMovieList(resultSet);
-            PreparedStatement preparedStatement = null;
             for (Movie movie : movies){
                 preparedStatement = connection.prepareStatement(FIND_COUNTRIES_BY_ID);
                 preparedStatement.setInt(1, movie.getId());
                 resultSet = preparedStatement.executeQuery();
                 movie.setCountries(mapCountries(resultSet));
             }
-            preparedStatement.close();
             return movies;
         } catch (ConnectionPoolException | SQLException e) {
             LOG.error("Error finding all movies", e);
             throw new DaoException("Error finding all movies", e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.close(preparedStatement);
+            pool.release(connection);
         }
     }
 
@@ -94,7 +96,7 @@ public class MovieDaoImpl implements MovieDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(DELETE);
             statement.setInt(1, id);
             int rows = statement.executeUpdate();
@@ -103,7 +105,8 @@ public class MovieDaoImpl implements MovieDao {
             LOG.error("Error deleting movie with id = " + id, e);
             throw new DaoException("Error deleting movie with id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            pool.release(connection);
         }
     }
 
@@ -121,7 +124,7 @@ public class MovieDaoImpl implements MovieDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
             setFields(movie, statement);
 
@@ -149,11 +152,12 @@ public class MovieDaoImpl implements MovieDao {
             movie.setId(id);
             return movie;
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             LOG.error("Error creating movie: " + movie, e);
             throw new DaoException("Error creating movie: " + movie, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.release(connection);
         }
     }
 
@@ -161,7 +165,7 @@ public class MovieDaoImpl implements MovieDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             statement = connection.prepareStatement(UPDATE);
             setFields(movie, statement);
             statement.setInt(7, movie.getId());
@@ -192,11 +196,12 @@ public class MovieDaoImpl implements MovieDao {
             }
             return movie;
         }  catch (SQLException | ConnectionPoolException e) {
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             LOG.error("Error updating movie: " + movie, e);
             throw new DaoException("Error updating movie: " + movie, e);
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            pool.release(connection);
         }
     }
 

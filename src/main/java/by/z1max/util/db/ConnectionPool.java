@@ -11,6 +11,8 @@ public final class ConnectionPool {
     private final static Logger LOG = Logger.getLogger(ConnectionPool.class);
     private final static int DEFAULT_POOL_SIZE = 5;
 
+    private static volatile ConnectionPool instance;
+
     private BlockingQueue<Connection> connectionQueue;
     private BlockingQueue<Connection> givenAwayQueue;
 
@@ -21,7 +23,7 @@ public final class ConnectionPool {
     private int poolSize;
 
 
-    public ConnectionPool(){
+    private ConnectionPool(){
         DBResourceManager resourceManager = DBResourceManager.getInstance();
         this.driver = resourceManager.getValue(DBParameter.DRIVER.getParameter());
         this.url = resourceManager.getValue(DBParameter.URL.getParameter());
@@ -30,11 +32,12 @@ public final class ConnectionPool {
         try {
             this.poolSize = Integer.valueOf(resourceManager.getValue(DBParameter.POOLSIZE.getParameter()));
         } catch(NumberFormatException e){
+            LOG.info("Connection pool size set in default value - " + DEFAULT_POOL_SIZE);
             poolSize = DEFAULT_POOL_SIZE;
         }
     }
 
-    public void init() throws ConnectionPoolException {
+    private void init() throws ConnectionPoolException {
         LOG.debug("Initializing connection pool.");
         try {
             Class.forName(driver);
@@ -51,6 +54,23 @@ public final class ConnectionPool {
             LOG.error("SQLExceptoin in connection pool.", e);
             throw new ConnectionPoolException("SQLExceptoin in connection pool.", e);
         }
+    }
+
+    public static ConnectionPool getInstance() {
+        if (instance == null){
+            synchronized (ConnectionPool.class){
+                if (instance == null){
+                    instance = new ConnectionPool();
+                    try {
+                        instance.init();
+                    } catch (ConnectionPoolException e) {
+                        LOG.error("Can't get instance of ConnectionPool", e);
+                    }
+                    return instance;
+                }
+            }
+        }
+        return instance;
     }
 
     public Connection take(boolean autoCommit) throws ConnectionPoolException {

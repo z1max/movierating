@@ -3,7 +3,7 @@ package by.z1max.dao;
 import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.DaoException;
 import by.z1max.model.Review;
-import by.z1max.util.db.DataSource;
+import by.z1max.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
@@ -18,10 +18,10 @@ public class ReviewDaoImpl implements ReviewDao{
     private static final String CREATE = "INSERT INTO review(user_id, movie_id, comment, date) VALUES (?,?,?,?)";
     private static final String DELETE = "DELETE FROM review WHERE id = ?";
 
-    private DataSource dataSource;
+    private ConnectionPool pool;
 
-    public ReviewDaoImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public ReviewDaoImpl(ConnectionPool pool) {
+        this.pool = pool;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ReviewDaoImpl implements ReviewDao{
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(FIND_BY_MOVIE_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -39,7 +39,8 @@ public class ReviewDaoImpl implements ReviewDao{
             LOG.error("Error finding all reviews by movie id = " + id, e);
             throw new DaoException("Error finding all reviews by movie id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.release(connection);
         }
     }
 
@@ -49,7 +50,7 @@ public class ReviewDaoImpl implements ReviewDao{
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
             setFields(review, statement);
 
@@ -63,11 +64,12 @@ public class ReviewDaoImpl implements ReviewDao{
             review.setId(id);
             return review;
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             LOG.error("Error creating review: " + review, e);
             throw new DaoException("Error creating review: " + review, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.release(connection);
         }
     }
 
@@ -76,17 +78,18 @@ public class ReviewDaoImpl implements ReviewDao{
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             statement = connection.prepareStatement(DELETE);
             statement.setInt(1, id);
             int rows = statement.executeUpdate();
             return rows == 1;
         } catch (ConnectionPoolException | SQLException e) {
             LOG.error("Error deleting review with id = " + id, e);
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             throw new DaoException("Error deleting review with id = " + id, e);
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            pool.release(connection);
         }
     }
 

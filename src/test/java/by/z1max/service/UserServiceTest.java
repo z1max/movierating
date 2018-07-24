@@ -8,7 +8,6 @@ import by.z1max.model.Role;
 import by.z1max.model.User;
 import by.z1max.util.PasswordEncoder;
 import by.z1max.util.db.ConnectionPool;
-import by.z1max.util.db.DataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -31,20 +30,17 @@ public class UserServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private static ConnectionPool connectionPool;
-    private static DataSource dataSource;
     private static UserService service;
 
     @BeforeClass
     public static void before(){
-        connectionPool = new ConnectionPool();
-        dataSource = DataSource.getInstance(connectionPool);
-        service = new UserServiceImpl(new UserDaoImpl(dataSource), new PasswordEncoder());
+        connectionPool = ConnectionPool.getInstance();
+        service = new UserServiceImpl(new UserDaoImpl(connectionPool), new PasswordEncoder());
     }
 
     @AfterClass
     public static void after(){
         connectionPool.dispose();
-        dataSource = null;
         service = null;
     }
 
@@ -130,14 +126,15 @@ public class UserServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = connectionPool.take(false);
             statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM user WHERE id = 6");
             statement.executeUpdate("ALTER TABLE user AUTO_INCREMENT = 6");
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            connectionPool.rollback(connection);
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            connectionPool.close(statement);
+            connectionPool.release(connection);
         }
     }
 
@@ -145,16 +142,17 @@ public class UserServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = connectionPool.take(false);
             statement = connection.createStatement();
             statement.executeUpdate("INSERT INTO user(id, username, email, password, registered, points, enabled)" +
                     " VAlUES (1, 'admin', 'admin@gmail.com', '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca'," +
                     "'2018-06-10', 10, 1)");
             statement.executeUpdate("INSERT INTO user_role(user_id, role) VALUES (1, 0), (1, 1)");
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            connectionPool.rollback(connection);
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            connectionPool.close(statement);
+            connectionPool.release(connection);
         }
     }
 }

@@ -4,7 +4,7 @@ import by.z1max.exception.ServiceException;
 import by.z1max.model.Country;
 import by.z1max.model.Genre;
 import by.z1max.model.Movie;
-import by.z1max.util.Context;
+import by.z1max.util.AppContext;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -14,14 +14,14 @@ import java.util.Set;
 
 public class EditMovieCommand extends Command {
     @Override
-    public void process(Context context) throws ServletException, IOException {
+    public void process(AppContext appContext) throws ServletException, IOException {
         String method = request.getMethod();
         if (method.equals("GET")){
             request.setAttribute("genres", Genre.values());
             request.setAttribute("countries", Country.values());
             if (request.getParameter("movieId") != null){
                 try {
-                    request.setAttribute("movie", context.getMovieService().get(Integer.parseInt(request.getParameter("movieId"))));
+                    request.setAttribute("movie", appContext.getMovieService().get(Integer.parseInt(request.getParameter("movieId"))));
                 } catch (ServiceException e) {
                     request.setAttribute("errorMessageKey", e.getMessage());
                 }
@@ -55,7 +55,7 @@ public class EditMovieCommand extends Command {
             movie.setCountries(countries);
 
             try {
-                int id = context.getMovieService().save(movie).getId();
+                int id = appContext.getMovieService().save(movie).getId();
                 response.sendRedirect("front?command=Details&id=" + id);
             } catch (ServiceException e) {
                 request.setAttribute("errorMessageKey", e.getMessage());

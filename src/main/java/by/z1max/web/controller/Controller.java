@@ -1,6 +1,6 @@
 package by.z1max.web.controller;
 
-import by.z1max.util.Context;
+import by.z1max.util.AppContext;
 import by.z1max.web.command.Command;
 import by.z1max.web.command.UnknownCommand;
 
@@ -14,33 +14,33 @@ import java.io.IOException;
 @WebServlet("/front")
 public class Controller extends HttpServlet {
 
-    private Context context;
+    private AppContext appContext;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        context = Context.getInstance();
+        appContext = AppContext.getInstance();
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        context.destroy();
-        context = null;
+        appContext.destroy();
+        appContext = null;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = getCommand(req.getParameter("command"));
         command.init(req, resp);
-        command.process(context);
+        command.process(appContext);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = getCommand(req.getParameter("command"));
         command.init(req, resp);
-        command.process(context);
+        command.process(appContext);
     }
 
     private Command getCommand(String command){

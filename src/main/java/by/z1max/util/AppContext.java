@@ -3,11 +3,10 @@ package by.z1max.util;
 import by.z1max.dao.*;
 import by.z1max.service.*;
 import by.z1max.util.db.ConnectionPool;
-import by.z1max.util.db.DataSource;
 
-public class Context {
-    private static volatile Context instance;
-    private DataSource dataSource = DataSource.getInstance(new ConnectionPool());
+public class AppContext {
+    private static volatile AppContext instance;
+    private ConnectionPool pool = ConnectionPool.getInstance();
     private PasswordEncoder passwordEncoder = new PasswordEncoder();
 
     private MovieDao movieDao;
@@ -20,11 +19,11 @@ public class Context {
     private ReviewService reviewService;
     private UserService userService;
 
-    private Context() {
-        movieDao = new MovieDaoImpl(dataSource);
-        ratingDao = new RatingDaoImpl(dataSource);
-        reviewDao = new ReviewDaoImpl(dataSource);
-        userDao = new UserDaoImpl(dataSource);
+    private AppContext() {
+        movieDao = new MovieDaoImpl(pool);
+        ratingDao = new RatingDaoImpl(pool);
+        reviewDao = new ReviewDaoImpl(pool);
+        userDao = new UserDaoImpl(pool);
 
         movieService = new MovieServiceImpl(movieDao, ratingDao, reviewDao);
         ratingService = new RatingServiceImpl(ratingDao, userDao);
@@ -32,11 +31,11 @@ public class Context {
         userService = new UserServiceImpl(userDao, passwordEncoder);
     }
 
-    public static Context getInstance(){
+    public static AppContext getInstance(){
         if (instance == null){
-            synchronized (DataSource.class){
+            synchronized (AppContext.class){
                 if (instance == null){
-                    instance = new Context();
+                    instance = new AppContext();
                 }
             }
         }
@@ -60,6 +59,6 @@ public class Context {
     }
 
     public void destroy(){
-        dataSource.dispose();
+        pool.dispose();
     }
 }

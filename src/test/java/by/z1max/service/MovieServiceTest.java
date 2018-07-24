@@ -2,16 +2,12 @@ package by.z1max.service;
 
 import by.z1max.dao.*;
 import by.z1max.exception.ServiceException;
-import by.z1max.util.PasswordEncoder;
 import by.z1max.util.db.ConnectionPool;
-import by.z1max.util.db.DataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import static org.junit.Assert.*;
 
 public class MovieServiceTest {
 
@@ -19,7 +15,6 @@ public class MovieServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private static ConnectionPool connectionPool;
-    private static DataSource dataSource;
     private static MovieDao movieDao;
     private static RatingDao ratingDao;
     private static ReviewDao reviewDao;
@@ -27,18 +22,16 @@ public class MovieServiceTest {
 
     @BeforeClass
     public static void before(){
-        connectionPool = new ConnectionPool();
-        dataSource = DataSource.getInstance(connectionPool);
-        movieDao = new MovieDaoImpl(dataSource);
-        ratingDao = new RatingDaoImpl(dataSource);
-        reviewDao = new ReviewDaoImpl(dataSource);
+        connectionPool = ConnectionPool.getInstance();
+        movieDao = new MovieDaoImpl(connectionPool);
+        ratingDao = new RatingDaoImpl(connectionPool);
+        reviewDao = new ReviewDaoImpl(connectionPool);
         service = new MovieServiceImpl(movieDao, ratingDao, reviewDao);
     }
 
     @AfterClass
     public static void after(){
         connectionPool.dispose();
-        dataSource = null;
         movieDao = null;
         ratingDao = null;
         reviewDao = null;

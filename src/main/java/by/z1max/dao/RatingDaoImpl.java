@@ -3,7 +3,7 @@ package by.z1max.dao;
 import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.DaoException;
 import by.z1max.model.Rating;
-import by.z1max.util.db.DataSource;
+import by.z1max.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -19,10 +19,10 @@ public class RatingDaoImpl implements RatingDao {
     private static final String GET_AVERAGE_RATING = "SELECT ROUND(AVG(rating), 1) FROM rating WHERE movie_id = ?";
     private static final String CREATE = "INSERT INTO rating(user_id, movie_id, rating) VALUES (?,?,?)";
 
-    private DataSource dataSource;
+    private ConnectionPool pool;
 
-    public RatingDaoImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public RatingDaoImpl(ConnectionPool pool) {
+        this.pool = pool;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class RatingDaoImpl implements RatingDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(FIND_BY_USER_ID);
             statement.setInt(1, userId);
             statement.setInt(2, movieId);
@@ -41,7 +41,8 @@ public class RatingDaoImpl implements RatingDao {
             LOG.error("Error finding rating by userId = " + userId + " and movieId = " + movieId, e);
             throw new DaoException("Error finding rating by userId = " + userId + " and movieId = " + movieId, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.release(connection);
         }
     }
 
@@ -51,7 +52,7 @@ public class RatingDaoImpl implements RatingDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(GET_AVERAGE_RATING);
             statement.setInt(1, movieId);
             resultSet = statement.executeQuery();
@@ -61,7 +62,8 @@ public class RatingDaoImpl implements RatingDao {
             LOG.error("Error getting average rating for movie with id = " + movieId, e);
             throw new DaoException("Error getting average rating for movie with id = " + movieId, e);
         } finally {
-            dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            pool.release(connection);
         }
     }
 
@@ -70,7 +72,7 @@ public class RatingDaoImpl implements RatingDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(CREATE);
             setFields(rating, statement);
             statement.executeUpdate();
@@ -78,7 +80,8 @@ public class RatingDaoImpl implements RatingDao {
         } catch (ConnectionPoolException | SQLException e) {
             throw new DaoException("Error creating review", e);
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            pool.release(connection);
         }
     }
 

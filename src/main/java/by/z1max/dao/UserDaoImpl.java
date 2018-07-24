@@ -4,7 +4,7 @@ import by.z1max.exception.ConnectionPoolException;
 import by.z1max.exception.DaoException;
 import by.z1max.model.Role;
 import by.z1max.model.User;
-import by.z1max.util.db.DataSource;
+import by.z1max.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
@@ -28,10 +28,10 @@ public class UserDaoImpl implements UserDao {
     private static final String UPDATE = "UPDATE movie_rating.user SET username=?, email=?, password=?, registered=?, points=?, enabled=? WHERE id =?";
     private static final String ADD_POINTS = "UPDATE user SET points=points+? WHERE id=?";
 
-    private DataSource dataSource;
+    private ConnectionPool pool;
 
-    public UserDaoImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public UserDaoImpl(ConnectionPool pool) {
+        this.pool = pool;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(FIND_BY_ID);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -49,7 +49,8 @@ public class UserDaoImpl implements UserDao {
             LOG.error("Error finding user by id = " + id, e);
             throw new DaoException("Error finding user by id = " + id, e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }
@@ -60,7 +61,7 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(FIND_BY_EMAIL);
             statement.setString(1, email);
             resultSet = statement.executeQuery();
@@ -69,7 +70,8 @@ public class UserDaoImpl implements UserDao {
             LOG.error("Error finding user by email = " + email, e);
             throw new DaoException("Error finding user by email = " + email, e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }
@@ -80,7 +82,7 @@ public class UserDaoImpl implements UserDao {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(FIND_ALL);
             return mapUserList(resultSet);
@@ -88,7 +90,8 @@ public class UserDaoImpl implements UserDao {
             LOG.error("Error finding all users", e);
             throw new DaoException("Error finding all users", e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }
@@ -107,7 +110,7 @@ public class UserDaoImpl implements UserDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = pool.take(true);
             statement = connection.prepareStatement(ADD_POINTS);
             statement.setInt(1, points);
             statement.setInt(2, userId);
@@ -116,7 +119,8 @@ public class UserDaoImpl implements UserDao {
             LOG.error("Error adding " + points + " points to user with id = " + userId, e);
             throw new DaoException("Error adding " + points + " points to user with id = " + userId, e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }
@@ -126,7 +130,7 @@ public class UserDaoImpl implements UserDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             Statement checkForKeys = connection.createStatement();
             checkForKeys.executeUpdate("SET FOREIGN_KEY_CHECKS=0");
             statement = connection.prepareStatement(DELETE);
@@ -139,11 +143,12 @@ public class UserDaoImpl implements UserDao {
             checkForKeys.close();
             return rows == 1;
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             LOG.error("Error deleting user with id = " + id);
             throw new DaoException("Error deleting user with id = " + id, e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }
@@ -153,7 +158,7 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             statement = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
             setFields(user, statement);
 
@@ -176,10 +181,11 @@ public class UserDaoImpl implements UserDao {
             user.setId(id);
             return user;
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             throw new DaoException("Error creating user: " + user, e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement, resultSet);
+            pool.close(statement, resultSet);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }
@@ -188,7 +194,7 @@ public class UserDaoImpl implements UserDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection(false);
+            connection = pool.take(false);
             statement = connection.prepareStatement(UPDATE);
 
             setFields(user, statement);
@@ -210,10 +216,11 @@ public class UserDaoImpl implements UserDao {
             }
             return user;
         } catch (ConnectionPoolException | SQLException e) {
-            dataSource.rollback(connection);
+            pool.rollback(connection);
             throw new DaoException("Error updating user: " + user, e);
         } finally {
-            boolean released = dataSource.releaseConnection(connection, statement);
+            pool.close(statement);
+            boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
     }

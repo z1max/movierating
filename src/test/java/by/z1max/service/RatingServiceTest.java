@@ -9,7 +9,6 @@ import by.z1max.exception.DaoException;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Rating;
 import by.z1max.util.db.ConnectionPool;
-import by.z1max.util.db.DataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -30,24 +29,21 @@ public class RatingServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private static ConnectionPool connectionPool;
-    private static DataSource dataSource;
     private static RatingDao ratingDao;
     private static UserDao userDao;
     private static RatingService service;
 
     @BeforeClass
     public static void before(){
-        connectionPool = new ConnectionPool();
-        dataSource = DataSource.getInstance(connectionPool);
-        ratingDao = new RatingDaoImpl(dataSource);
-        userDao = new UserDaoImpl(dataSource);
+        connectionPool = ConnectionPool.getInstance();
+        ratingDao = new RatingDaoImpl(connectionPool);
+        userDao = new UserDaoImpl(connectionPool);
         service = new RatingServiceImpl(ratingDao, userDao);
     }
 
     @AfterClass
     public static void after(){
         connectionPool.dispose();
-        dataSource = null;
         ratingDao = null;
         service = null;
     }
@@ -77,13 +73,14 @@ public class RatingServiceTest {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = dataSource.getConnection(true);
+            connection = connectionPool.take(true);
             statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM rating WHERE user_id = 1 AND movie_id = 14");
         } catch (ConnectionPoolException | SQLException ignored) {
 
         } finally {
-            dataSource.releaseConnection(connection, statement);
+            connectionPool.close(statement);
+            connectionPool.release(connection);
         }
     }
 }
