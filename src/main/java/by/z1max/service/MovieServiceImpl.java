@@ -12,6 +12,7 @@ import by.z1max.model.Review;
 import by.z1max.util.MovieUtil;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +43,7 @@ public class MovieServiceImpl implements MovieService {
                 LazyMovie lazyMovie = MovieUtil.getFrom(movie, rating);
                 result.add(lazyMovie);
             }
+            result.sort(Comparator.comparing(LazyMovie::getRating));
             return result;
         } catch (DaoException e) {
             throw new ServiceException("exception.movie.getAll", e);
