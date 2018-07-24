@@ -14,33 +14,20 @@ import java.io.IOException;
 @WebServlet("/front")
 public class Controller extends HttpServlet {
 
-    private AppContext appContext;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        appContext = AppContext.getInstance();
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-        appContext.destroy();
-        appContext = null;
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = getCommand(req.getParameter("command"));
         command.init(req, resp);
-        command.process(appContext);
+        AppContext ctx = (AppContext) getServletContext().getAttribute("appContext");
+        command.process(ctx);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = getCommand(req.getParameter("command"));
         command.init(req, resp);
-        command.process(appContext);
+        AppContext ctx = (AppContext) getServletContext().getAttribute("appContext");
+        command.process(ctx);
     }
 
     private Command getCommand(String command){
