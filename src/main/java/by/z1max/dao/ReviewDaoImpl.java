@@ -7,9 +7,9 @@ import by.z1max.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+
+import static by.z1max.util.mapper.ReviewMapper.mapReviewList;
 
 public class ReviewDaoImpl implements ReviewDao{
     private static final Logger LOG = Logger.getLogger(ReviewDaoImpl.class);
@@ -91,20 +91,6 @@ public class ReviewDaoImpl implements ReviewDao{
             pool.close(statement);
             pool.release(connection);
         }
-    }
-
-    private List<Review> mapReviewList(ResultSet resultSet) throws SQLException {
-        List<Review> reviews = new ArrayList<>();
-        while (resultSet.next()){
-            int id = resultSet.getInt("id");
-            int userId = resultSet.getInt("user_id");
-            String username = resultSet.getString("username");
-            int movieId = resultSet.getInt("movie_id");
-            String comment = resultSet.getString("comment");
-            LocalDate localDate = resultSet.getDate("date").toLocalDate();
-            reviews.add(new Review(id, userId, username, movieId, comment, localDate));
-        }
-        return reviews;
     }
 
     private void setFields(Review review, PreparedStatement statement) throws SQLException {

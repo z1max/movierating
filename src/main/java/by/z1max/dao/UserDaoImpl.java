@@ -12,6 +12,9 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 
+import static by.z1max.util.mapper.UserMapper.map;
+import static by.z1max.util.mapper.UserMapper.mapUserList;
+
 public class UserDaoImpl implements UserDao {
     private static final Logger LOG = Logger.getLogger(UserDaoImpl.class);
 
@@ -223,52 +226,6 @@ public class UserDaoImpl implements UserDao {
             boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
-    }
-
-    private Optional<User> map(ResultSet resultSet) throws SQLException {
-        Optional<User> user;
-        resultSet.first();
-        try {
-            user = Optional.of(mapFields(resultSet));
-        } catch (NullPointerException e){
-            user = Optional.empty();
-        }
-        return user;
-    }
-
-    private List<User> mapUserList(ResultSet resultSet) throws SQLException {
-        List<User> users = new ArrayList<>();
-        User user;
-        while (resultSet.next()){
-            user = mapFields(resultSet);
-            users.add(user);
-        }
-        return users;
-     }
-
-    private User mapFields(ResultSet resultSet) throws SQLException, NullPointerException {
-        User user;
-        int id = resultSet.getInt("id");
-        String username = resultSet.getString("username");
-        String email = resultSet.getString("email");
-        String password = resultSet.getString("password");
-        LocalDate registered = resultSet.getDate("registered").toLocalDate();
-        int points = resultSet.getInt("points");
-        boolean enabled = resultSet.getBoolean("enabled");
-        String roles = resultSet.getString("roles");
-        user = new User(id, username, email, password, registered, points, enabled);
-        user.setRoles(mapRoles(roles));
-        return user;
-    }
-
-    private Set<Role> mapRoles(String roles) {
-        Set<Role> result = new HashSet<>();
-        String[] rolesArr = roles.split(",");
-        for (String role : rolesArr) {
-            Role current = Role.values()[Integer.parseInt(role)];
-            result.add(current);
-        }
-        return result;
     }
 
     private void setFields(User user, PreparedStatement statement) throws SQLException {

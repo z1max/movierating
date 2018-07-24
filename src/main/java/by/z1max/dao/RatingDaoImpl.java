@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static by.z1max.util.mapper.RatingMapper.map;
+
 public class RatingDaoImpl implements RatingDao {
     private final static Logger LOG = Logger.getLogger(RatingDaoImpl.class);
 
@@ -89,18 +91,5 @@ public class RatingDaoImpl implements RatingDao {
         statement.setInt(1, rating.getUserId());
         statement.setInt(2, rating.getMovieId());
         statement.setByte(3, rating.getRating());
-    }
-
-    private Optional<Rating> map(ResultSet resultSet) throws SQLException {
-        Optional<Rating> result = Optional.empty();
-        if (!resultSet.isBeforeFirst()){
-            return result;
-        }
-        resultSet.first();
-        int userId = resultSet.getInt("user_id");
-        int movieId = resultSet.getInt("movie_id");
-        byte rating = resultSet.getByte("rating");
-        result = Optional.of(new Rating(userId, movieId, rating));
-        return result;
     }
 }

@@ -9,9 +9,10 @@ import by.z1max.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
+import static by.z1max.util.mapper.MovieMapper.*;
 
 public class MovieDaoImpl implements MovieDao {
     private static final Logger LOG = Logger.getLogger(MovieDaoImpl.class);
@@ -205,59 +206,6 @@ public class MovieDaoImpl implements MovieDao {
         }
     }
 
-    private Optional<Movie> map(ResultSet resultSet) throws SQLException {
-        Optional<Movie> movie;
-        resultSet.first();
-        try{
-            movie = Optional.of(mapFields(resultSet));
-        } catch (NullPointerException e){
-            movie = Optional.empty();
-        }
-        return movie;
-    }
-
-    private List<Movie> mapMovieList(ResultSet resultSet) throws SQLException {
-        List<Movie> movies = new ArrayList<>();
-        while (resultSet.next()){
-            movies.add(mapFields(resultSet));
-        }
-        return movies;
-    }
-
-    private Movie mapFields(ResultSet resultSet) throws SQLException, NullPointerException {
-        Movie movie;
-        int id = resultSet.getInt("id");
-        String title = resultSet.getString("title");
-        String director = resultSet.getString("director");
-        LocalDate releaseDate = resultSet.getDate("release_date").toLocalDate();
-        int budget = resultSet.getInt("budget");
-        String description = resultSet.getString("description");
-        short runtime = resultSet.getShort("runtime");
-        String genres = resultSet.getString("genres");
-        movie = new Movie(id, title, director, releaseDate, budget, description, runtime);
-        movie.setGenres(mapGenres(genres));
-        return movie;
-    }
-
-    private Set<Genre> mapGenres(String genres) {
-        Set<Genre> result = new HashSet<>();
-        String[] genresArr = genres.split(",");
-        for (String genre : genresArr) {
-            Genre current = Genre.values()[Integer.parseInt(genre)];
-            result.add(current);
-        }
-        return result;
-    }
-
-    private Set<Country> mapCountries(ResultSet resultSet) throws SQLException {
-        Set<Country> result = new HashSet<>();
-        while (resultSet.next()){
-            String name = resultSet.getString("name");
-            result.add(Country.valueOf(name));
-        }
-        return result;
-    }
-    
     private void setFields(Movie movie, PreparedStatement statement) throws SQLException {
         statement.setString(1, movie.getTitle());
         statement.setString(2, movie.getDirector());
