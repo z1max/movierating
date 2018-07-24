@@ -8,7 +8,7 @@ import by.z1max.util.AppContext;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class WriteReviewCommand extends Command {
+/*public class WriteReviewCommand extends Command {
     @Override
     public void process(AppContext appContext) throws ServletException, IOException {
         ActiveUser activeUser = (ActiveUser) request.getSession(false).getAttribute("activeUser");
@@ -24,4 +24,4 @@ public class WriteReviewCommand extends Command {
             forward("unknown");
         }
     }
-}
+}*/

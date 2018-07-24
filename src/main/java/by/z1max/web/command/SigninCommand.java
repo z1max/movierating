@@ -11,23 +11,28 @@ import java.io.IOException;
 
 public class SigninCommand extends Command {
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
-        String method = request.getMethod();
+    public CommandResponse process() {
         if ("GET".equals(method)){
-            forward("signin");
-        }
-        if ("POST".equals(method)){
+            return CommandResponse.newBuilder()
+                    .setTarget("signin")
+                    .build();
+        } else {
             UserService service = appContext.getUserService();
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+            String email = wrapper.getParameter("email");
+            String password = wrapper.getParameter("password");
             try {
                 User user = service.loadUserByEmailAndPassword(email, password);
                 ActiveUser activeUser = new ActiveUser(user.getId(), user.getUsername(), user.getRoles(), user.getStatus());
-                request.getSession(false).setAttribute("activeUser", activeUser);
-                response.sendRedirect(request.getContextPath() + "/front?command=Home");
+                wrapper.setSessionAttribute("activeUser", activeUser);
+                return CommandResponse.newBuilder()
+                        .setTarget("/front?command=Home")
+                        .setRedirect(true)
+                        .build();
             } catch (ServiceException e) {
-                request.setAttribute("errorMessageKey", e.getMessage());
-                forward("signin");
+                wrapper.setAttribute("errorMessageKey", e.getMessage());
+                return CommandResponse.newBuilder()
+                        .setTarget("signin")
+                        .build();
             }
         }
     }

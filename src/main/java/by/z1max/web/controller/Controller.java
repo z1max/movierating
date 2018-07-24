@@ -2,7 +2,9 @@ package by.z1max.web.controller;
 
 import by.z1max.util.AppContext;
 import by.z1max.web.command.Command;
+import by.z1max.web.command.CommandResponse;
 import by.z1max.web.command.UnknownCommand;
+import by.z1max.web.wrapper.RequestWrapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,18 +18,26 @@ public class Controller extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Command command = getCommand(req.getParameter("command"));
-        command.init(req, resp);
-        AppContext ctx = (AppContext) getServletContext().getAttribute("appContext");
-        command.process(ctx);
+        handleRequest(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handleRequest(req, resp);
+    }
+
+    private void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Command command = getCommand(req.getParameter("command"));
-        command.init(req, resp);
         AppContext ctx = (AppContext) getServletContext().getAttribute("appContext");
-        command.process(ctx);
+        RequestWrapper wrapper = new RequestWrapper();
+        wrapper.parseRequest(req);
+
+        command.init(wrapper, ctx, req.getMethod());
+        CommandResponse commandResponse = command.process();
+
+        wrapper.updateRequest(req);
+
+        handleCommandResponse(commandResponse, req, resp);
     }
 
     private Command getCommand(String command){
@@ -36,6 +46,15 @@ public class Controller extends HttpServlet {
             return (Command) type.asSubclass(Command.class).newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
            return new UnknownCommand();
+        }
+    }
+
+    private void handleCommandResponse(CommandResponse commandResponse, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        if (commandResponse.isRedirect()){
+            resp.sendRedirect(req.getContextPath() + commandResponse.getTarget());
+        } else {
+            String target = String.format("pages/%s.jsp", commandResponse.getTarget());
+            req.getRequestDispatcher(target).forward(req, resp);
         }
     }
 }

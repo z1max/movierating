@@ -1,17 +1,10 @@
 package by.z1max.web.command;
 
-import by.z1max.util.AppContext;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-
 public class ChangeLanguageCommand extends Command {
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String language = request.getParameter("language");
-        session.setAttribute("language", language);
-        response.sendRedirect(request.getContextPath());
+    public CommandResponse process() {
+        String language = wrapper.getParameter("language");
+        wrapper.setSessionAttribute("language", language);
+        return CommandResponse.forwardIndex();
     }
 }

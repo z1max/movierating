@@ -7,7 +7,7 @@ import by.z1max.util.AppContext;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class SignupCommand extends Command {
+/*public class SignupCommand extends Command {
     @Override
     public void process(AppContext appContext) throws ServletException, IOException {
         String method = request.getMethod();
@@ -29,4 +29,4 @@ public class SignupCommand extends Command {
             }
         }
     }
-}
+}*/

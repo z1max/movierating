@@ -8,14 +8,17 @@ import java.io.IOException;
 
 public class DeleteMovieCommand extends Command {
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
-        int id = Integer.valueOf(request.getParameter("movieId"));
+    public CommandResponse process() {
+        int id = Integer.valueOf(wrapper.getParameter("movieId"));
         try {
             appContext.getMovieService().delete(id);
-            response.sendRedirect("front?command=Home");
+            return CommandResponse.newBuilder()
+                    .setTarget("front?command=Home")
+                    .setRedirect(true)
+                    .build();
         } catch (ServiceException e) {
-            request.setAttribute("errorMessageKey", e.getMessage());
-            forward("unknown");
+            wrapper.setAttribute("errorMessageKey", e.getMessage());
+            return CommandResponse.forwardUnknown();
         }
     }
 }

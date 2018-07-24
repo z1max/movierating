@@ -14,37 +14,38 @@ import java.util.Set;
 
 public class EditMovieCommand extends Command {
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
-        String method = request.getMethod();
-        if (method.equals("GET")){
-            request.setAttribute("genres", Genre.values());
-            request.setAttribute("countries", Country.values());
-            if (request.getParameter("movieId") != null){
+    public CommandResponse process() {
+        if ("GET".equals(method)){
+            wrapper.setAttribute("genres", Genre.values());
+            wrapper.setAttribute("countries", Country.values());
+            if (wrapper.getParameter("movieId") != null){
                 try {
-                    request.setAttribute("movie", appContext.getMovieService().get(Integer.parseInt(request.getParameter("movieId"))));
+                    wrapper.setAttribute("movie", appContext.getMovieService().get(Integer.parseInt(wrapper.getParameter("movieId"))));
                 } catch (ServiceException e) {
-                    request.setAttribute("errorMessageKey", e.getMessage());
+                    wrapper.setAttribute("errorMessageKey", e.getMessage());
                 }
             }
-            forward("editMovie");
-        }
-        if (method.equals("POST")){
-            String movieIdParam = request.getParameter("movieId");
+            return CommandResponse.newBuilder()
+                    .setTarget("editMovie")
+                    .setRedirect(true)
+                    .build();
+        } else {
+            String movieIdParam = wrapper.getParameter("movieId");
             Integer movieId = movieIdParam.equals("") ? null : Integer.valueOf(movieIdParam);
-            String title = request.getParameter("title");
-            String director = request.getParameter("director");
-            LocalDate releaseDate = LocalDate.parse(request.getParameter("releaseDate"));
-            int budget = Integer.valueOf(request.getParameter("budget"));
-            String description = request.getParameter("description");
-            short runtime = Short.valueOf(request.getParameter("runtime"));
+            String title = wrapper.getParameter("title");
+            String director = wrapper.getParameter("director");
+            LocalDate releaseDate = LocalDate.parse(wrapper.getParameter("releaseDate"));
+            int budget = Integer.valueOf(wrapper.getParameter("budget"));
+            String description = wrapper.getParameter("description");
+            short runtime = Short.valueOf(wrapper.getParameter("runtime"));
 
-            String[] genresParam = request.getParameterValues("genres");
+            String[] genresParam = wrapper.getParameterValues("genres");
             Set<Genre> genres = new HashSet<>();
             for (String genre : genresParam){
                 genres.add(Genre.valueOf(genre));
             }
 
-            String[] countriesParam = request.getParameterValues("countries");
+            String[] countriesParam = wrapper.getParameterValues("countries");
             Set<Country> countries = new HashSet<>();
             for (String country : countriesParam){
                 countries.add(Country.valueOf(country));
@@ -56,10 +57,15 @@ public class EditMovieCommand extends Command {
 
             try {
                 int id = appContext.getMovieService().save(movie).getId();
-                response.sendRedirect("front?command=Details&id=" + id);
+                return CommandResponse.newBuilder()
+                        .setTarget("front?command=Details&id=" + id)
+                        .setRedirect(true)
+                        .build();
             } catch (ServiceException e) {
-                request.setAttribute("errorMessageKey", e.getMessage());
-                forward("editMovie");
+                wrapper.setAttribute("errorMessageKey", e.getMessage());
+                return CommandResponse.newBuilder()
+                        .setTarget("editMovie")
+                        .build();
             }
         }
     }

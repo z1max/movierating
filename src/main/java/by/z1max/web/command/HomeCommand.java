@@ -9,14 +9,16 @@ import java.io.IOException;
 
 public class HomeCommand extends Command{
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
+    public CommandResponse process() {
         MovieService service = appContext.getMovieService();
 
         try {
-            request.setAttribute("movies", service.getAll());
+            wrapper.setAttribute("movies", service.getAll());
         } catch (ServiceException e) {
-            request.setAttribute("errorMessageKey", e.getMessage());
+            wrapper.setAttribute("errorMessageKey", e.getMessage());
         }
-        forward("home");
+        return CommandResponse.newBuilder()
+                .setTarget("home")
+                .build();
     }
 }

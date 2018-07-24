@@ -9,7 +9,7 @@ import by.z1max.dto.ActiveUser;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class RateCommand extends Command {
+/*public class RateCommand extends Command {
     @Override
     public void process(AppContext appContext) throws ServletException, IOException {
         RatingService service = appContext.getRatingService();
@@ -27,4 +27,4 @@ public class RateCommand extends Command {
             forward("unknown");
         }
     }
-}
+}*/
