@@ -19,7 +19,7 @@ public class ChangePasswordCommand extends Command {
             user.setPassword(newPassword);
             service.save(user);
             return CommandResponse.newBuilder()
-                    .setTarget("front?command=Profile&id=" + activeUser.getId())
+                    .setTarget("/front?command=Profile&id=" + activeUser.getId())
                     .setRedirect(true)
                     .build();
         } catch (ServiceException e) {
