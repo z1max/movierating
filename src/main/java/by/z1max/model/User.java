@@ -1,6 +1,7 @@
 package by.z1max.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,12 +22,14 @@ public class User extends BaseEntity {
         this.registered = registered;
         this.points = points;
         this.enabled = enabled;
+        this.roles = new HashSet<>();
     }
 
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.roles = new HashSet<>();
     }
 
     public String getUsername() {
