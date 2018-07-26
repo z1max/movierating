@@ -46,7 +46,11 @@ public class RequestWrapper {
     }
 
     public String getParameter(String key){
-        return parameterMap.get(key)[0];
+        String[] values = parameterMap.get(key);
+        if (values == null) {
+            return null;
+        }
+        return values[0];
     }
 
     public String[] getParameterValues(String key){

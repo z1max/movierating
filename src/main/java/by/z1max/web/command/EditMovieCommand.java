@@ -4,10 +4,7 @@ import by.z1max.exception.ServiceException;
 import by.z1max.model.Country;
 import by.z1max.model.Genre;
 import by.z1max.model.Movie;
-import by.z1max.util.AppContext;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +24,6 @@ public class EditMovieCommand extends Command {
             }
             return CommandResponse.newBuilder()
                     .setTarget("editMovie")
-                    .setRedirect(true)
                     .build();
         } else {
             String movieIdParam = wrapper.getParameter("movieId");
@@ -58,7 +54,7 @@ public class EditMovieCommand extends Command {
             try {
                 int id = appContext.getMovieService().save(movie).getId();
                 return CommandResponse.newBuilder()
-                        .setTarget("front?command=Details&id=" + id)
+                        .setTarget("/front?command=Details&id=" + id)
                         .setRedirect(true)
                         .build();
             } catch (ServiceException e) {

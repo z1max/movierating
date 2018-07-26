@@ -2,10 +2,6 @@ package by.z1max.web.command;
 
 import by.z1max.exception.ServiceException;
 import by.z1max.service.MovieService;
-import by.z1max.util.AppContext;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
 
 public class HomeCommand extends Command{
     @Override

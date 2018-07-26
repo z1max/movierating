@@ -50,10 +50,19 @@ public class Controller extends HttpServlet {
     }
 
     private void handleCommandResponse(CommandResponse commandResponse, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        if (commandResponse.isInvalidate()){
+            req.getSession(false).invalidate();
+        }
+
         if (commandResponse.isRedirect()){
             resp.sendRedirect(req.getContextPath() + commandResponse.getTarget());
         } else {
-            String target = String.format("pages/%s.jsp", commandResponse.getTarget());
+            String target = commandResponse.getTarget();
+            if (target.equals("index")){
+                target = "index.jsp";
+            } else {
+                target = String.format("pages/%s.jsp", target);
+            }
             req.getRequestDispatcher(target).forward(req, resp);
         }
     }

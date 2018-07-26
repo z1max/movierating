@@ -2,31 +2,29 @@ package by.z1max.web.command;
 
 import by.z1max.exception.ServiceException;
 import by.z1max.model.User;
-import by.z1max.util.AppContext;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-
-/*public class SignupCommand extends Command {
+public class SignupCommand extends Command {
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
-        String method = request.getMethod();
+    public CommandResponse process() {
         if ("GET".equals(method)) {
-            forward("signup");
-        }
-        if ("POST".equals(method)){
-            String username = request.getParameter("username");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+            return CommandResponse.newBuilder()
+                    .setTarget("signup")
+                    .build();
+        } else {
+            String username = wrapper.getParameter("username");
+            String email = wrapper.getParameter("email");
+            String password = wrapper.getParameter("password");
             User user = new User(username, email, password);
             try {
                 appContext.getUserService().save(user);
-                forward("signin");
+                return CommandResponse.newBuilder()
+                        .setTarget("signin")
+                        .build();
             } catch (ServiceException e) {
-                request.setAttribute("errorMessageKey", e.getMessage());
-                request.setAttribute("errorParam", "'" + username + "/" + email + "'");
-                forward("signup");
+                wrapper.setAttribute("errorMessageKey", e.getMessage());
+                wrapper.setAttribute("errorParam", "'" + username + "/" + email + "'");
+                return CommandResponse.forwardUnknown();
             }
         }
     }
-}*/
+}

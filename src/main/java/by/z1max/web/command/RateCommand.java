@@ -1,30 +1,29 @@
 package by.z1max.web.command;
 
+import by.z1max.dto.ActiveUser;
 import by.z1max.exception.ServiceException;
 import by.z1max.model.Rating;
 import by.z1max.service.RatingService;
-import by.z1max.util.AppContext;
-import by.z1max.dto.ActiveUser;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-
-/*public class RateCommand extends Command {
+public class RateCommand extends Command {
     @Override
-    public void process(AppContext appContext) throws ServletException, IOException {
+    public CommandResponse process() {
         RatingService service = appContext.getRatingService();
 
-        ActiveUser activeUser = (ActiveUser) request.getSession(false).getAttribute("activeUser");
-        byte enteredRating = Byte.valueOf(request.getParameter("rating"));
-        int movieId = Integer.valueOf(request.getParameter("movieId"));
+        ActiveUser activeUser = (ActiveUser) wrapper.getSessionAttribute("activeUser");
+        byte enteredRating = Byte.valueOf(wrapper.getParameter("rating"));
+        int movieId = Integer.valueOf(wrapper.getParameter("movieId"));
         Rating rating = new Rating(activeUser.getId(), movieId, enteredRating);
 
         try {
             service.create(rating);
-            response.sendRedirect(request.getContextPath() + "/front?command=Details&id=" + movieId);
+            return CommandResponse.newBuilder()
+                    .setTarget("/front?command=Details&id=" + movieId)
+                    .setRedirect(true)
+                    .build();
         } catch (ServiceException e) {
-            request.setAttribute("errorMessageKey", e.getMessage());
-            forward("unknown");
+            wrapper.setAttribute("errorMessageKey", e.getMessage());
+            return CommandResponse.forwardUnknown();
         }
     }
-}*/
+}

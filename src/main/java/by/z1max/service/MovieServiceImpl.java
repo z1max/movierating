@@ -43,7 +43,7 @@ public class MovieServiceImpl implements MovieService {
                 LazyMovie lazyMovie = MovieUtil.getFrom(movie, rating);
                 result.add(lazyMovie);
             }
-            result.sort(Comparator.comparing(LazyMovie::getRating));
+            result.sort(Comparator.comparing(LazyMovie::getRating).reversed());
             return result;
         } catch (DaoException e) {
             throw new ServiceException("exception.movie.getAll", e);
