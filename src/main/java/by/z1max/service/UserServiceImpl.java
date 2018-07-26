@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static by.z1max.model.Role.ROLE_ADMIN;
+import static by.z1max.model.Role.ROLE_USER;
 import static by.z1max.util.ValidationUtil.*;
 
 public class UserServiceImpl implements UserService {
@@ -90,6 +91,7 @@ public class UserServiceImpl implements UserService {
         if (user.getStatus() == null){
             user.setPoints(0);
         }
+        user.addRole(ROLE_USER);
         user.setEnabled(true);
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
