@@ -240,3 +240,8 @@ table.users-table td {
     border-bottom: 1px solid #ccc;
     text-align: left;
 }
+
+.error {
+    color : red;
+    text-align: center;
+}

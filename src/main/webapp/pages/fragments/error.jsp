@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <c:if test="${not empty errorMessageKey}">
     <div>
-        <p>
+        <p class="error">
             <fmt:message key="${errorMessageKey}">
                 <c:if test="${not empty errorParam}">
                     <fmt:param value="${errorParam}"/>
