@@ -27,10 +27,10 @@
             </c:otherwise>
         </c:choose>
         <div class="menu-item">
-            <form method="post" action="front?command=ChangeLanguage">
+            <form>
                 <select id="language" name="language" onchange="submit()">
-                    <option value="en_US" ${language == 'en_US' ? 'selected' : ''}>English</option>
-                    <option value="ru_RU" ${language == 'ru_RU' ? 'selected' : ''}>Русский</option>
+                    <option value="en" ${language == 'en' ? 'selected' : ''}>English</option>
+                    <option value="ru" ${language == 'ru' ? 'selected' : ''}>Русский</option>
                 </select>
             </form>
         </div>
