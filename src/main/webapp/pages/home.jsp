@@ -12,7 +12,7 @@
             <div class="content">
                 <%@ include file="fragments/error.jsp"%>
                 <c:forEach items="${movies}" var="movie">
-                    <jsp:useBean id="movie" scope="page" type="by.z1max.dto.LazyMovie"/>
+                    <jsp:useBean id="movie" scope="page" type="by.epam.dto.LazyMovie"/>
                     <a class="movie" href="?command=Details&id=${movie.id}">
                         <div>
                             <div class="rating">

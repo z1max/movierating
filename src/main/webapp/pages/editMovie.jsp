@@ -10,7 +10,7 @@
         <section>
             <div class="content-small">
                 <form class="form" id="movie-form" method="post" action="front?command=EditMovie">
-                    <jsp:useBean id="movie" scope="request" class="by.z1max.model.Movie"/>
+                    <jsp:useBean id="movie" scope="request" class="by.epam.model.Movie"/>
 
                     <input type="hidden" name="movieId" value="${movie.id}">
 

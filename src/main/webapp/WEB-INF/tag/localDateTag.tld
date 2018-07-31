@@ -9,7 +9,7 @@
     <uri>WEB-INF/localDateTag.tld</uri>
     <tag>
         <name>getFormatted</name>
-        <tag-class>by.z1max.web.tag.LocalDateTag</tag-class>
+        <tag-class>by.epam.web.tag.LocalDateTag</tag-class>
         <body-content>empty</body-content>
         <attribute>
             <name>localDate</name>
