@@ -12,7 +12,7 @@
                     </div>
                 </c:if>
                 <div class="menu-item">
-                    <a style="color:white" href="front?command=Profile">${activeUser.username}</a>
+                    <a href="front?command=Profile">${activeUser.username}</a>
                 </div>
                 <div class="menu-item">
                     <form method="post" action="front?command=Logout">
@@ -26,13 +26,5 @@
                 </div>
             </c:otherwise>
         </c:choose>
-        <div class="menu-item">
-            <form>
-                <select id="language" name="language" onchange="submit()">
-                    <option value="en" ${language == 'en' ? 'selected' : ''}>English</option>
-                    <option value="ru" ${language == 'ru' ? 'selected' : ''}>Русский</option>
-                </select>
-            </form>
-        </div>
     </div>
 </header>

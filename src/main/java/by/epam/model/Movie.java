@@ -100,6 +100,39 @@ public class Movie extends BaseEntity {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie other = (Movie) o;
+        return budget == other.budget &&
+                runtime == other.runtime &&
+                title.equals(other.title) &&
+                director.equals(other.director) &&
+                releaseDate.equals(other.releaseDate) &&
+                description.equals(other.description) &&
+                genres.equals(other.genres) &&
+                countries.equals(other.countries) &&
+                reviews.equals(other.reviews);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        int prime = 31;
+        hash = prime * hash + (super.getId() == null ? 0 : super.getId().hashCode());
+        hash = prime * hash + (title == null ? 0 : title.hashCode());
+        hash = prime * hash + (director == null ? 0 : director.hashCode());
+        hash = prime * hash + (releaseDate == null ? 0 : releaseDate.hashCode());
+        hash = prime * hash + budget;
+        hash = prime * hash + (description == null ? 0 : description.hashCode());
+        hash = prime * hash + (int) runtime;
+        hash = prime * hash + (genres == null ? 0 : genres.hashCode());
+        hash = prime * hash + (countries == null ? 0 : countries.hashCode());
+        hash = prime * hash + (reviews == null ? 0 : reviews.hashCode());
+        return hash;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Movie{");
         sb.append("id='").append(super.getId()).append('\'');

@@ -10,7 +10,7 @@ public class AddAdminCommand extends Command {
         int id = Integer.valueOf(wrapper.getParameter("userId"));
 
         try {
-            service.grandAdminAuthority(id);
+            service.grantAdminAuthority(id);
             return CommandResponse.newBuilder()
                     .setTarget("/front?command=AdminPage")
                     .setRedirect(true)

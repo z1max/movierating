@@ -36,6 +36,26 @@ public class Rating {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rating other = (Rating) o;
+        return userId == other.userId &&
+                movieId == other.movieId &&
+                rating == other.rating;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        int prime = 31;
+        hash = prime * hash + userId;
+        hash = prime * hash + movieId;
+        hash = prime * hash + (int) rating;
+        return hash;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Rating{");
         sb.append("userId=").append(userId);
