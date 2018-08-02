@@ -12,7 +12,7 @@
                     </div>
                 </c:if>
                 <div class="menu-item">
-                    <a style="color:white" href="front?command=Profile">${activeUser.username}</a>
+                    <a href="front?command=Profile">${activeUser.username}</a>
                 </div>
                 <div class="menu-item">
                     <form method="post" action="front?command=Logout">
