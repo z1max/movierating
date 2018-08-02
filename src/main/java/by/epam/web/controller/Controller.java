@@ -58,11 +58,7 @@ public class Controller extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + commandResponse.getTarget());
         } else {
             String target = commandResponse.getTarget();
-            if (target.equals("index")){
-                target = "index.jsp";
-            } else {
-                target = String.format("pages/%s.jsp", target);
-            }
+            target = String.format("pages/%s.jsp", target);
             req.getRequestDispatcher(target).forward(req, resp);
         }
     }

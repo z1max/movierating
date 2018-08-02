@@ -4,7 +4,8 @@ public class LogoutCommand extends Command {
     @Override
     public CommandResponse process() {
         return CommandResponse.newBuilder()
-                .setTarget("index")
+                .setTarget("/")
+                .setRedirect(true)
                 .setInvalidate(true)
                 .build();
     }

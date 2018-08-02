@@ -17,7 +17,8 @@ public class DeleteAccountCommand extends Command {
             User user = service.loadUserByIdAndPassword(activeUser.getId(), enteredPassword);
             service.delete(user);
             return CommandResponse.newBuilder()
-                    .setTarget("index")
+                    .setTarget("/")
+                    .setRedirect(true)
                     .setInvalidate(true)
                     .build();
         } catch (ServiceException e) {
