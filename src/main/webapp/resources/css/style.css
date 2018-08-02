@@ -35,6 +35,11 @@ hr {
     background-color: black;
 }
 
+.header-content {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
 .footer {
     position: absolute;
     overflow: hidden;
