@@ -10,6 +10,7 @@ import by.epam.exception.ServiceException;
 import by.epam.model.Movie;
 import by.epam.model.Review;
 import by.epam.util.MovieUtil;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +21,8 @@ import static by.epam.util.ValidationUtil.checkLength;
 import static by.epam.util.ValidationUtil.checkNotFound;
 
 public class MovieServiceImpl implements MovieService {
+    private static final Logger LOG = Logger.getLogger(MovieServiceImpl.class);
+
     private static final int MAX_TITLE_LENGTH = 60;
     private static final int MAX_DIRECTOR_LENGTH = 45;
     private static final int MAX_DESCRIPTION_LENGTH = 1200;
@@ -35,6 +38,7 @@ public class MovieServiceImpl implements MovieService {
     }
     @Override
     public List<LazyMovie> getAll() throws ServiceException {
+        LOG.info("Getting all movies");
         List<LazyMovie> result = new ArrayList<>();
         try {
             List<Movie> movies = movieDao.findAll();
@@ -46,36 +50,43 @@ public class MovieServiceImpl implements MovieService {
             result.sort(Comparator.comparing(LazyMovie::getRating).reversed());
             return result;
         } catch (DaoException e) {
+            LOG.error("Error getting all movies", e);
             throw new ServiceException("exception.movie.getAll", e);
         }
     }
 
     @Override
     public EagerMovie getEager(int id) throws ServiceException {
+        LOG.info("Getting movie by id = " + id);
         try {
             Movie movie = movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.notFound"));
             float rating = ratingDao.getAverageRating(id);
             List<Review> reviews = reviewDao.findByMovieId(id);
             return MovieUtil.getFrom(movie, rating, reviews);
         } catch (DaoException e) {
+            LOG.error("Error getting movie with id = " + id, e);
             throw new ServiceException("exception.movie.getById", e);
         }
     }
 
     @Override
     public Movie get(int id) throws ServiceException {
+        LOG.info("Getting movie by id = " + id);
         try {
-            return movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.getById"));
+            return movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.notFound"));
         } catch (DaoException e) {
+            LOG.error("Error getting movie with id = " + id, e);
             throw new ServiceException("exception.movie.getById");
         }
     }
 
     @Override
     public void delete(int id) throws ServiceException {
+        LOG.info("Deleting movie by id = " + id);
         try {
             checkNotFound(movieDao.delete(id));
         } catch (DaoException e) {
+            LOG.error("Error deleting movie with id = " + id, e);
             throw new ServiceException("exception.movie.delete");
         }
     }
@@ -83,6 +94,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie save(Movie movie) throws ServiceException {
         Objects.requireNonNull(movie);
+        LOG.info("Saving " + movie);
         if (!checkLength(movie.getTitle(), MAX_TITLE_LENGTH)){
             throw new ServiceException("exception.movie.title");
         }
@@ -95,6 +107,7 @@ public class MovieServiceImpl implements MovieService {
         try {
             return movieDao.save(movie);
         } catch (DaoException e) {
+            LOG.error("Error saving movie: " + movie, e);
             throw new ServiceException("exception.movie.save", e);
         }
     }
