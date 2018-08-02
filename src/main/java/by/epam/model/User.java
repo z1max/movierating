@@ -2,7 +2,6 @@ package by.epam.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class User extends BaseEntity {
@@ -104,20 +103,30 @@ public class User extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return  Objects.equals(super.getId(), user.getId()) &&
-                Objects.equals(username, user.username) &&
-                Objects.equals(email, user.email) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(registered, user.registered) &&
-                enabled == user.enabled &&
-                points == user.points &&
-                Objects.equals(roles, user.roles);
+        User other = (User) o;
+        return  super.getId().equals(other.getId()) &&
+                username.equals(other.username) &&
+                email.equals(other.email) &&
+                password.equals(other.password) &&
+                registered.equals(other.registered) &&
+                enabled == other.enabled &&
+                points == other.points &&
+                roles.equals(other.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, email, password, registered, points, enabled, roles);
+        int hash = 1;
+        int prime = 31;
+        hash = prime * hash + (super.getId() == null ? 0 : super.getId());
+        hash = prime * hash + (username == null ? 0 : username.hashCode());
+        hash = prime * hash + (email == null ? 0 : email.hashCode());
+        hash = prime * hash + (password == null ? 0 : password.hashCode());
+        hash = prime * hash + (registered == null ? 0 : registered.hashCode());
+        hash = prime * hash + points;
+        hash = prime * hash + (enabled ? 1 : 0);
+        hash = prime * hash + (roles == null ? 0 : roles.hashCode());
+        return hash;
     }
 
     @Override
