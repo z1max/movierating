@@ -279,8 +279,12 @@ table.users-table td {
 }
 
 .error {
-    color : red;
+    color: #D8000C;
+    background-color: #FFD2D2;
+    border: 2px solid #D8000C;
+    border-radius: 3px;
     text-align: center;
+    vertical-align: middle;
 }
 
 /* ------------ Custom select ------------ */
