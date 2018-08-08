@@ -75,6 +75,13 @@
                             <div class="comment-head">
                                 <p class="username">${review.username}</p>
                                 <p class="date">${review.date}</p>
+                                <c:if test="${activeUser.isAdmin()}">
+                                    <form action="front?command=DeleteReview" method="post">
+                                        <input type="hidden" name="reviewId" value="${review.getId()}">
+                                        <input type="hidden" name="movieId" value="${movie.getId()}">
+                                        <input type="submit" class="button" value="<fmt:message key="review.delete"/>">
+                                    </form>
+                                </c:if>
                             </div>
                             <div>
                                 <p>${review.comment}</p>

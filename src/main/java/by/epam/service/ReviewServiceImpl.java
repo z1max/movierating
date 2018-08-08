@@ -55,12 +55,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void delete(Review review) throws ServiceException {
-        LOG.info("Deleting " + review);
+    public void delete(int id) throws ServiceException {
+        LOG.info("Deleting by id = " + id);
         try {
-            checkNotFound(reviewDao.delete(review.getId()));
+            checkNotFound(reviewDao.delete(id));
         } catch (DaoException e) {
-            LOG.error("Error deleting review: " + review, e);
+            LOG.error("Error deleting review by id = " + id, e);
             throw new ServiceException("exception.review.delete", e);
         }
     }
