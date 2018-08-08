@@ -11,7 +11,7 @@ section {
     top: 100px;
     left: 0;
     right: 0;
-    bottom: 50px;
+    bottom: 0;
     overflow: auto;
 }
 
@@ -38,17 +38,6 @@ hr {
 .header-content {
     margin-left: 5%;
     margin-right: 5%;
-}
-
-.footer {
-    position: absolute;
-    overflow: hidden;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    width: 100%;
-    background-color: black;
 }
 
 .logo-container{
@@ -188,10 +177,12 @@ hr {
     font-weight: bold;
     float: right;
     display: inline-block;
-    border: 2px solid black;
+    border: 3px solid #4d194d;
     border-radius: 5px;
     padding: 20px;
-    background-color: #ffcc00;
+    background-color: #862d86;
+    color : white;
+            /*#ffcc00;*/
 }
 
 .movie {
