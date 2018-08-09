@@ -8,9 +8,8 @@ import by.epam.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static by.epam.util.mapper.UserMapper.map;
 import static by.epam.util.mapper.UserMapper.mapUserList;
@@ -19,16 +18,16 @@ public class UserDaoImpl implements UserDao {
     private static final Logger LOG = Logger.getLogger(UserDaoImpl.class);
 
     private static final String FIND_BY_ID = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles " +
-            "FROM movie_rating.user JOIN user_role ON id = user_id WHERE id = ?";
+            "FROM user JOIN user_role ON id = user_id WHERE id = ? GROUP BY id";
     private static final String FIND_BY_EMAIL = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles " +
-            "FROM movie_rating.user JOIN user_role ON id = user_id WHERE email = ?";
+            "FROM user JOIN user_role ON id = user_id WHERE email = ? GROUP BY id";
     private static final String FIND_ALL = "SELECT id, username, email, password, registered, points, enabled, group_concat(role SEPARATOR ',') AS roles" +
             " FROM user JOIN user_role ON id = user_id GROUP BY username;";
-    private static final String DELETE = "DELETE FROM movie_rating.user WHERE id = ?";
-    private static final String DELETE_ROLES = "DELETE FROM movie_rating.user_role WHERE user_id = ?";
-    private static final String CREATE = "INSERT INTO movie_rating.user(username, email, password, registered, points, enabled) VALUES (?,?,?,?,?,?)";
-    private static final String CREATE_ROLES = "INSERT INTO movie_rating.user_role(user_id, role) VALUES (?,?)";
-    private static final String UPDATE = "UPDATE movie_rating.user SET username=?, email=?, password=?, registered=?, points=?, enabled=? WHERE id =?";
+    private static final String DELETE = "DELETE FROM user WHERE id = ?";
+    private static final String DELETE_ROLES = "DELETE FROM user_role WHERE user_id = ?";
+    private static final String CREATE = "INSERT INTO user(username, email, password, registered, points, enabled) VALUES (?,?,?,?,?,?)";
+    private static final String CREATE_ROLES = "INSERT INTO user_role(user_id, role) VALUES (?,?)";
+    private static final String UPDATE = "UPDATE user SET username=?, email=?, password=?, registered=?, points=?, enabled=? WHERE id =?";
     private static final String ADD_POINTS = "UPDATE user SET points=points+? WHERE id=?";
 
     private ConnectionPool pool;
