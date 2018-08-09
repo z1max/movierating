@@ -27,7 +27,7 @@
                         </tr>
                         <tr>
                             <th><fmt:message key="user.status"/></th>
-                            <td>${user.status}</td>
+                            <td><fmt:message key="user.status.${user.status}"/></td>
                         </tr>
                     </table>
                     <div class="content-full button-container">

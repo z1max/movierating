@@ -32,7 +32,7 @@
                                 <td>${user.username}</td>
                                 <td>${user.email}</td>
                                 <td><ldt:getFormatted localDate="${user.registered}" locale="${language}"/></td>
-                                <td>${user.status}</td>
+                                <td><fmt:message key="user.status.${user.status}"/></td>
                                 <td>${user.roles}</td>
                                 <td>${user.enabled}</td>
                                 <td>
