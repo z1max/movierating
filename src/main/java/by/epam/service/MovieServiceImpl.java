@@ -1,8 +1,6 @@
 package by.epam.service;
 
-import by.epam.dao.MovieDao;
-import by.epam.dao.RatingDao;
-import by.epam.dao.ReviewDao;
+import by.epam.dao.*;
 import by.epam.dto.EagerMovie;
 import by.epam.dto.LazyMovie;
 import by.epam.exception.DaoException;
@@ -12,10 +10,7 @@ import by.epam.model.Review;
 import by.epam.util.MovieUtil;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static by.epam.util.ValidationUtil.checkLength;
 import static by.epam.util.ValidationUtil.checkNotFound;
@@ -30,11 +25,15 @@ public class MovieServiceImpl implements MovieService {
     private MovieDao movieDao;
     private RatingDao ratingDao;
     private ReviewDao reviewDao;
+    private GenreDao genreDao;
+    private CountryDao countryDao;
 
-    public MovieServiceImpl(MovieDao movieDao, RatingDao ratingDao, ReviewDao reviewDao) {
+    public MovieServiceImpl(MovieDao movieDao, RatingDao ratingDao, ReviewDao reviewDao, GenreDao genreDao, CountryDao countryDao) {
         this.movieDao = movieDao;
         this.ratingDao = ratingDao;
         this.reviewDao = reviewDao;
+        this.genreDao = genreDao;
+        this.countryDao = countryDao;
     }
     @Override
     public List<LazyMovie> getAll() throws ServiceException {
@@ -43,6 +42,8 @@ public class MovieServiceImpl implements MovieService {
         try {
             List<Movie> movies = movieDao.findAll();
             for (Movie movie : movies){
+                movie.setCountries(new HashSet<>(countryDao.findByMovieId(movie.getId())));
+                movie.setGenres(new HashSet<>(genreDao.findByMovieId(movie.getId())));
                 float rating = ratingDao.getAverageRating(movie.getId());
                 LazyMovie lazyMovie = MovieUtil.getFrom(movie, rating);
                 result.add(lazyMovie);
@@ -60,6 +61,8 @@ public class MovieServiceImpl implements MovieService {
         LOG.info("Getting movie by id = " + id);
         try {
             Movie movie = movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.notFound"));
+            movie.setCountries(new HashSet<>(countryDao.findByMovieId(movie.getId())));
+            movie.setGenres(new HashSet<>(genreDao.findByMovieId(movie.getId())));
             float rating = ratingDao.getAverageRating(id);
             List<Review> reviews = reviewDao.findByMovieId(id);
             return MovieUtil.getFrom(movie, rating, reviews);
@@ -73,7 +76,11 @@ public class MovieServiceImpl implements MovieService {
     public Movie get(int id) throws ServiceException {
         LOG.info("Getting movie by id = " + id);
         try {
-            return movieDao.findById(id).orElseThrow(() -> new ServiceException("exception.movie.notFound"));
+            Movie movie = movieDao.findById(id)
+                    .orElseThrow(() -> new ServiceException("exception.movie.notFound"));
+            movie.setCountries(new HashSet<>(countryDao.findByMovieId(movie.getId())));
+            movie.setGenres(new HashSet<>(genreDao.findByMovieId(movie.getId())));
+            return movie;
         } catch (DaoException e) {
             LOG.error("Error getting movie with id = " + id, e);
             throw new ServiceException("exception.movie.getById");

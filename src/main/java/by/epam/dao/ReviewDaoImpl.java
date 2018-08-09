@@ -14,7 +14,7 @@ import static by.epam.util.mapper.ReviewMapper.mapReviewList;
 public class ReviewDaoImpl implements ReviewDao{
     private static final Logger LOG = Logger.getLogger(ReviewDaoImpl.class);
 
-    private static final String FIND_BY_MOVIE_ID = "SELECT review.id, user.id AS user_id, username, movie_id, comment, date FROM review JOIN movie_rating.user ON user_id = user.id WHERE movie_id = ?";
+    private static final String FIND_BY_MOVIE_ID = "SELECT review.id, user.id AS user_id, username, movie_id, comment, date FROM review JOIN user ON user_id = user.id WHERE movie_id = ?";
     private static final String CREATE = "INSERT INTO review(user_id, movie_id, comment, date) VALUES (?,?,?,?)";
     private static final String DELETE = "DELETE FROM review WHERE id = ?";
 

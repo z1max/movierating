@@ -48,7 +48,7 @@ public class MovieUtil {
 
     private static String convertGenres(Set<Genre> genres){
         return genres.stream()
-                .map(Genre::toString)
+                .map(Genre::getName)
                 .collect(Collectors.joining(", "));
 
     }

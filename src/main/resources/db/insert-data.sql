@@ -15,12 +15,12 @@ SET FOREIGN_KEY_CHECKS=1;
 -- Data for table `movie_rating`.`user`
 -- -----------------------------------------------------
 USE `movie_rating`;
-INSERT INTO `movie_rating`.`user` (`id`, `username`, `email`, `password`, `registered`, `status`, `enabled`) VALUES 
-  (1, 'admin', 'admin@gmail.com', '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca', '2018-06-10', 'BRONZE', 1),
-  (2, 'valera', 'valera@yandex.ru', '4bb6db7e55593590fc92506ef021dbe671d87fb0de1390a23d9672a7d1e7d7f5', '2018-06-11', 'SILVER', 1),
-  (3, 'sobakez', 'sobakez@gmail.com', 'f68b67dd51c8d06677324d21ee9005b9c809c6ddfc12e5b67c9353eed4ab54f4', '2018-06-12', 'GOLD', 1),
-  (4, 'tomimt', 'tomimt@hotmail.com', '5eef1353ac5c84b464f1eed1de4f322661a15316a9c88f7c688c354284a91d3e', '2018-06-12', 'BRONZE', 1),
-  (5, 'Sam', 'sam@gmail.com', 'd4daffdfad7c75260eeaa52d1221e2e494b9a42650728fd110a70ac952d8974f', '2018-06-13', 'BRONZE', 1);
+INSERT INTO `movie_rating`.`user` (`id`, `username`, `email`, `password`, `registered`, `points`, `enabled`) VALUES 
+  (1, 'admin', 'admin@gmail.com', '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca', '2018-06-10', 10, 1),
+  (2, 'valera', 'valera@yandex.ru', '4bb6db7e55593590fc92506ef021dbe671d87fb0de1390a23d9672a7d1e7d7f5', '2018-06-11', 32, 1),
+  (3, 'sobakez', 'sobakez@gmail.com', 'f68b67dd51c8d06677324d21ee9005b9c809c6ddfc12e5b67c9353eed4ab54f4', '2018-06-12', 60, 1),
+  (4, 'tomimt', 'tomimt@hotmail.com', '5eef1353ac5c84b464f1eed1de4f322661a15316a9c88f7c688c354284a91d3e', '2018-06-12', 27, 1),
+  (5, 'Sam', 'sam@gmail.com', 'd4daffdfad7c75260eeaa52d1221e2e494b9a42650728fd110a70ac952d8974f', '2018-06-13', 16, 1);
 
 -- -----------------------------------------------------
 -- Data for table `movie_rating`.`user_role`

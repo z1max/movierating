@@ -17,18 +17,15 @@ import static by.epam.util.mapper.MovieMapper.*;
 public class MovieDaoImpl implements MovieDao {
     private static final Logger LOG = Logger.getLogger(MovieDaoImpl.class);
 
-    private static final String FIND_BY_ID = "SELECT id, title, director, release_date, budget, description, runtime, group_concat(genre SEPARATOR ',') AS genres" +
-            " FROM movie JOIN genre ON id = genre.movie_id WHERE id = ?";
-    private static final String FIND_COUNTRIES_BY_ID = "SELECT name FROM country WHERE movie_id = ?";
-    private static final String FIND_ALL = "SELECT id, title, director, release_date, budget, description, runtime, group_concat(genre SEPARATOR ',') AS genres" +
-            " FROM movie JOIN genre ON id = genre.movie_id GROUP BY id";
+    private static final String FIND_BY_ID = "SELECT id, title, director, release_date, budget, description, runtime FROM movie WHERE id = ?";
+    private static final String FIND_ALL = "SELECT id, title, director, release_date, budget, description, runtime FROM movie";
     private static final String DELETE = "DELETE FROM movie WHERE id = ?";
     private static final String CREATE = "INSERT INTO movie(title, director, release_date, budget, description, runtime) VALUES (?,?,?,?,?,?)";
-    private static final String CREATE_GENRES = "INSERT INTO genre(movie_id, genre) VALUES (?,?)";
-    private static final String CREATE_COUNTRIES = "INSERT INTO country(movie_id, name) VALUES (?,?)";
+    private static final String CREATE_GENRES = "INSERT INTO movie_has_genre(movie_id, genre_id) VALUES (?,?)";
+    private static final String CREATE_COUNTRIES = "INSERT INTO movie_has_country(movie_id, country_id) VALUES (?,?)";
     private static final String UPDATE = "UPDATE movie SET title = ?, director = ?, release_date = ?, budget = ?, description = ?, runtime = ? WHERE id = ?";
-    private static final String DELETE_GENRES = "DELETE FROM genre WHERE movie_id = ?";
-    private static final String DELETE_COUNTRIES = "DELETE FROM country WHERE movie_id = ?";
+    private static final String DELETE_GENRES = "DELETE FROM movie_has_genre WHERE movie_id = ?";
+    private static final String DELETE_COUNTRIES = "DELETE FROM movie_has_country WHERE movie_id = ?";
 
     private ConnectionPool pool;
 
@@ -47,13 +44,6 @@ public class MovieDaoImpl implements MovieDao {
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             Optional<Movie> movie = map(resultSet);
-            if (!movie.isPresent()){
-                return movie;
-            }
-            statement = connection.prepareStatement(FIND_COUNTRIES_BY_ID);
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            movie.get().setCountries(mapCountries(resultSet));
             return movie;
         } catch (ConnectionPoolException | SQLException e) {
             LOG.error("Error finding movie by id = " + id, e);
@@ -69,25 +59,16 @@ public class MovieDaoImpl implements MovieDao {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
         try {
             connection = pool.take(true);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(FIND_ALL);
-            List<Movie> movies = mapMovieList(resultSet);
-            for (Movie movie : movies){
-                preparedStatement = connection.prepareStatement(FIND_COUNTRIES_BY_ID);
-                preparedStatement.setInt(1, movie.getId());
-                resultSet = preparedStatement.executeQuery();
-                movie.setCountries(mapCountries(resultSet));
-            }
-            return movies;
+            return mapMovieList(resultSet);
         } catch (ConnectionPoolException | SQLException e) {
             LOG.error("Error finding all movies", e);
             throw new DaoException("Error finding all movies", e);
         } finally {
             pool.close(statement, resultSet);
-            pool.close(preparedStatement);
             pool.release(connection);
         }
     }
@@ -141,13 +122,13 @@ public class MovieDaoImpl implements MovieDao {
             for (Genre genre : movie.getGenres()) {
                 statement = connection.prepareStatement(CREATE_GENRES);
                 statement.setInt(1, id);
-                statement.setInt(2, genre.ordinal());
+                statement.setInt(2, genre.getId());
                 statement.executeUpdate();
             }
             for (Country country : movie.getCountries()) {
                 statement = connection.prepareStatement(CREATE_COUNTRIES);
                 statement.setInt(1, id);
-                statement.setString(2, country.toString());
+                statement.setInt(2, country.getId());
                 statement.executeUpdate();
             }
             movie.setId(id);
@@ -186,13 +167,13 @@ public class MovieDaoImpl implements MovieDao {
             for (Genre genre : movie.getGenres()) {
                 statement = connection.prepareStatement(CREATE_GENRES);
                 statement.setInt(1, movie.getId());
-                statement.setInt(2, genre.ordinal());
+                statement.setInt(2, genre.getId());
                 statement.executeUpdate();
             }
             for (Country country : movie.getCountries()) {
                 statement = connection.prepareStatement(CREATE_COUNTRIES);
                 statement.setInt(1, movie.getId());
-                statement.setString(2, country.toString());
+                statement.setInt(2, country.getId());
                 statement.executeUpdate();
             }
             return movie;

@@ -32,7 +32,7 @@
                     <h1><fmt:message key="movie.genres"/></h1>
                     <select id="genre-select">
                         <c:forEach items="${genres}" var="genre">
-                            <option value="${genre}">${genre.toString()}</option>
+                            <option value="${genre.getName()}">${genre.getName()}</option>
                         </c:forEach>
                     </select>
                     <button type="button" onclick="addEnumItem('genre-select', 'genres')">Add genre</button>
@@ -40,7 +40,7 @@
                         <c:if test="${not empty movie.genres}">
                             <c:forEach items="${movie.genres}" var="genre">
                                 <div>
-                                    <input type="text" readonly="readonly" name="genres" value="${genre}">
+                                    <input type="text" readonly="readonly" name="genres" value="${genre.getName()}">
                                     <button type="button" onclick="remove(this)">Remove</button>
                                 </div>
                             </c:forEach>
@@ -50,7 +50,7 @@
                     <h1><fmt:message key="movie.countries"/></h1>
                     <select id="country-select">
                         <c:forEach items="${countries}" var="country">
-                            <option value="${country}">${country.getName()}</option>
+                            <option value="${country.getName()}">${country.getName()}</option>
                         </c:forEach>
                     </select>
                     <button type="button" onclick="addEnumItem('country-select', 'countries')">Add Country</button>
@@ -58,7 +58,7 @@
                         <c:if test="${not empty movie.countries}">
                             <c:forEach items="${movie.countries}" var="country">
                                 <div>
-                                    <input type="text" readonly="readonly" name="countries" value="${country}">
+                                    <input type="text" readonly="readonly" name="countries" value="${country.getName()}">
                                     <button type="button" onclick="remove(this)">Remove</button>
                                 </div>
                             </c:forEach>
