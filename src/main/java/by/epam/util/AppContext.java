@@ -13,22 +13,30 @@ public class AppContext {
     private RatingDao ratingDao;
     private ReviewDao reviewDao;
     private UserDao userDao;
+    private GenreDao genreDao;
+    private CountryDao countryDao;
 
     private MovieService movieService;
     private RatingService ratingService;
     private ReviewService reviewService;
     private UserService userService;
+    private GenreService genreService;
+    private CountryService countryService;
 
     private AppContext() {
         movieDao = new MovieDaoImpl(pool);
         ratingDao = new RatingDaoImpl(pool);
         reviewDao = new ReviewDaoImpl(pool);
         userDao = new UserDaoImpl(pool);
+        genreDao = new GenreDaoImpl(pool);
+        countryDao = new CountryDaoImpl(pool);
 
-        movieService = new MovieServiceImpl(movieDao, ratingDao, reviewDao);
+        movieService = new MovieServiceImpl(movieDao, ratingDao, reviewDao, genreDao, countryDao);
         ratingService = new RatingServiceImpl(ratingDao, userDao);
         reviewService = new ReviewServiceImpl(reviewDao, userDao);
         userService = new UserServiceImpl(userDao, passwordEncoder);
+        genreService = new GenreServiceImpl(genreDao);
+        countryService = new CountryServiceImpl(countryDao);
     }
 
     public static AppContext getInstance(){
@@ -56,6 +64,14 @@ public class AppContext {
 
     public UserService getUserService() {
         return userService;
+    }
+
+    public GenreService getGenreService() {
+        return genreService;
+    }
+
+    public CountryService getCountryService() {
+        return countryService;
     }
 
     public void destroy(){
