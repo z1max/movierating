@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static by.epam.util.mapper.CountryMapper.map;
+import static by.epam.util.mapper.CountryMapper.mapList;
+
 public class CountryDaoImpl implements CountryDao {
     private static final Logger LOG = Logger.getLogger(CountryDaoImpl.class);
 
@@ -176,32 +179,5 @@ public class CountryDaoImpl implements CountryDao {
             boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
-    }
-
-    private Optional<Country> map(ResultSet resultSet) throws SQLException {
-        Optional<Country> country = Optional.empty();
-        if (!resultSet.isBeforeFirst()) {
-            return country;
-        }
-        resultSet.next();
-        country = Optional.of(mapFields(resultSet));
-        return country;
-    }
-
-    private List<Country> mapList(ResultSet resultSet) throws SQLException {
-        List<Country> result = new ArrayList<>();
-        Country country;
-        while (resultSet.next()){
-            country = mapFields(resultSet);
-            result.add(country);
-        }
-        return result;
-    }
-
-    private Country mapFields(ResultSet resultSet) throws SQLException {
-        Country country = new Country();
-        country.setId(resultSet.getInt("id"));
-        country.setName(resultSet.getString("name"));
-        return country;
     }
 }

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static by.epam.util.mapper.GenreMapper.map;
+import static by.epam.util.mapper.GenreMapper.mapList;
+
 public class GenreDaoImpl implements GenreDao {
     private static final Logger LOG = Logger.getLogger(GenreDaoImpl.class);
     
@@ -176,32 +179,5 @@ public class GenreDaoImpl implements GenreDao {
             boolean released = pool.release(connection);
             LOG.debug("Connection released: " + released);
         }
-    }
-
-    private Optional<Genre> map(ResultSet resultSet) throws SQLException {
-        Optional<Genre> genre = Optional.empty();
-        if (!resultSet.isBeforeFirst()){
-            return genre;
-        }
-        resultSet.next();
-        genre = Optional.of(mapFields(resultSet));
-        return genre;
-    }
-
-    private Genre mapFields(ResultSet resultSet) throws SQLException {
-        Genre genre = new Genre();
-        genre.setId(resultSet.getInt("id"));
-        genre.setName(resultSet.getString("name"));
-        return genre;
-    }
-
-    private List<Genre> mapList(ResultSet resultSet) throws SQLException {
-        List<Genre> result = new ArrayList<>();
-        Genre genre;
-        while (resultSet.next()) {
-            genre = mapFields(resultSet);
-            result.add(genre);
-        }
-        return result;
     }
 }
