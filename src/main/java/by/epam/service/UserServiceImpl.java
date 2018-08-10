@@ -120,11 +120,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void grantAdminAuthority(int id) throws ServiceException {
+    public void grantOrDenyAdminAuthority(int id) throws ServiceException {
         LOG.info("Granting admin authority to user with id = " + id);
         try {
             User user = userDao.findById(id).orElseThrow(() -> new ServiceException("exception.user.notFound"));
-            user.addRole(ROLE_ADMIN);
+            if (user.isAdmin()){
+                user.getRoles().remove(ROLE_ADMIN);
+            } else {
+                user.addRole(ROLE_ADMIN);
+            }
             userDao.save(user);
         } catch (DaoException e) {
             LOG.error("Error granting admin authority to user with id = " + id, e);
@@ -133,7 +137,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void enable(int id) throws ServiceException {
+    public void enableOrDisable(int id) throws ServiceException {
         LOG.info("Enabling/disabling user with id = " + id);
         try {
             User user = userDao.findById(id).orElseThrow(() -> new ServiceException("exception.user.notFound"));
@@ -152,6 +156,17 @@ public class UserServiceImpl implements UserService {
             checkNotFound(userDao.delete(user.getId()));
         } catch (DaoException e) {
             LOG.error("Error deleting user: " + user, e);
+            throw new ServiceException("exception.user.delete", e);
+        }
+    }
+
+    @Override
+    public void delete(int id) throws ServiceException {
+        LOG.info("Deleting user by id = " + id);
+        try {
+            checkNotFound(userDao.delete(id));
+        } catch (DaoException e) {
+            LOG.error("Error deleting user by id =  " + id, e);
             throw new ServiceException("exception.user.delete", e);
         }
     }

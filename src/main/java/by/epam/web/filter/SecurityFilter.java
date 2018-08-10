@@ -9,7 +9,7 @@ import java.io.IOException;
 
 @WebFilter(urlPatterns = {"/front"})
 public class SecurityFilter implements Filter {
-    private static final String[] RESTRICTED_FOR_USERS = {"AdminPage", "DeleteMovie", "EditMovie", "AddAdmin", "DeleteReview", "EnableUser"};
+    private static final String[] RESTRICTED_FOR_USERS = {"AdminPage", "DeleteMovie", "EditMovie", "GrantOrDenyAdmin", "DeleteReview", "EnableOrDisableUser"};
     private final static String[] ALLOWED_FOR_GUESTS = {"ChangeLanguage", "Details", "Home", "Signin", "Signup", "Unknown"};
     private FilterConfig filterConfig;
 

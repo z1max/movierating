@@ -12,7 +12,8 @@ public interface UserService {
     User loadUserByIdAndPassword(int id, String password) throws ServiceException;
     List<User> getAll() throws ServiceException;
     User save(User user) throws ServiceException;
-    void grantAdminAuthority(int userId) throws ServiceException;
-    void enable(int id) throws ServiceException;
+    void grantOrDenyAdminAuthority(int userId) throws ServiceException;
+    void enableOrDisable(int id) throws ServiceException;
     void delete(User user) throws ServiceException;
+    void delete(int id) throws ServiceException;
 }

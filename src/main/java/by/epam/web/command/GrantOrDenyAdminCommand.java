@@ -3,14 +3,14 @@ package by.epam.web.command;
 import by.epam.exception.ServiceException;
 import by.epam.service.UserService;
 
-public class AddAdminCommand extends Command {
+public class GrantOrDenyAdminCommand extends Command {
     @Override
     public CommandResponse process() {
         UserService service = appContext.getUserService();
         int id = Integer.valueOf(wrapper.getParameter("userId"));
 
         try {
-            service.grantAdminAuthority(id);
+            service.grantOrDenyAdminAuthority(id);
             return CommandResponse.newBuilder()
                     .setTarget("/front?command=AdminPage")
                     .setRedirect(true)
