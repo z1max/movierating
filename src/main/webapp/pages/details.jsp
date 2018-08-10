@@ -4,7 +4,7 @@
 <html>
     <head>
         <%@ include file="fragments/meta.jsp" %>
-        <title>Movie Rating | <fmt:message key="title.details"/> </title>
+        <title>Movie Rating | <fmt:message key="title.details"/></title>
     </head>
     <body>
         <%@ include file="fragments/header.jsp" %>
@@ -12,16 +12,21 @@
             <div class="content">
                 <%@ include file="fragments/error.jsp" %>
                 <div class="movie-details">
-                    <h1 class="title">${movie.title}</h1>
-                    <c:if test="${activeUser.isAdmin()}">
-                        <div>
-                            <a class="button button-inline" href="front?command=EditMovie&movieId=${movie.id}"><fmt:message key="movie.edit"/></a>
+                    <div>
+                        <h1 class="title">${movie.title}</h1>
+                        <c:if test="${activeUser.isAdmin()}">
+                            <form class="button-inline" method="get"
+                                  action="front">
+                                <input type="hidden" name="command" value="EditMovie">
+                                <input type="hidden" name="movieId" value="${movie.id}">
+                                <input class="button edit" type="submit" value="">
+                            </form>
                             <form class="button-inline" method="post" action="front?command=DeleteMovie">
                                 <input type="hidden" name="movieId" value="${movie.id}">
-                                <input class="button" type="submit" value="<fmt:message key="movie.delete"/>">
+                                <input class="button delete" type="submit" value="">
                             </form>
-                        </div>
-                    </c:if>
+                        </c:if>
+                    </div>
                     <div>
                         <form method="post" action="front?command=Rate" onchange="submit()">
                             <input type="hidden" name="movieId" value="${movie.id}">
@@ -79,7 +84,7 @@
                                     <form action="front?command=DeleteReview" method="post">
                                         <input type="hidden" name="reviewId" value="${review.getId()}">
                                         <input type="hidden" name="movieId" value="${movie.getId()}">
-                                        <input type="submit" class="button" value="<fmt:message key="review.delete"/>">
+                                        <input type="submit" class="button delete" value="">
                                     </form>
                                 </c:if>
                             </div>

@@ -20,9 +20,8 @@
                             <th><fmt:message key="user.email"/></th>
                             <th><fmt:message key="user.registered"/></th>
                             <th><fmt:message key="user.status"/></th>
-                            <th><fmt:message key="user.roles"/></th>
                             <th><fmt:message key="user.enabled"/></th>
-                            <th></th>
+                            <th><fmt:message key="user.admin"/></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -33,18 +32,22 @@
                                 <td>${user.email}</td>
                                 <td><ldt:getFormatted localDate="${user.registered}" locale="${language}"/></td>
                                 <td><fmt:message key="user.status.${user.status}"/></td>
-                                <td>${user.roles}</td>
-                                <td>${user.enabled}</td>
                                 <td>
-                                    <form method="post" action="front?command=AddAdmin">
+                                    <form method="post" action="front?command=EnableOrDisableUser">
                                         <input type="hidden" name="userId" value="${user.id}">
-                                        <input class="button ${user.isAdmin() ? 'button-disabled' : ''}" type="submit" value="<fmt:message key="user.makeAdmin"/>" ${user.isAdmin() ? 'disabled' : ''}>
+                                        <input class="button ${user.enabled ? 'check' : 'cross'}" type="submit" value="">
                                     </form>
                                 </td>
                                 <td>
-                                    <form method="post" action="front?command=EnableUser">
+                                    <form method="post" action="front?command=GrantOrDenyAdmin">
                                         <input type="hidden" name="userId" value="${user.id}">
-                                        <input class="button" type="submit" value="<fmt:message key="user.enable"/>">
+                                        <input class="button ${user.isAdmin() ? 'check' : 'cross'}" type="submit" value="" ${user.getId() == activeUser.getId() ? 'disabled' : ''}>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form method="post" action="front?command=DeleteUser">
+                                        <input type="hidden" name="userId" value="${user.id}">
+                                        <input class="button delete" type="submit" value="">
                                     </form>
                                 </td>
                             </tr>
