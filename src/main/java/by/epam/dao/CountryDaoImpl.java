@@ -7,7 +7,6 @@ import by.epam.util.db.ConnectionPool;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +23,7 @@ public class CountryDaoImpl implements CountryDao {
             "WHERE movie_id = ?";
     private static final String CREATE = "INSERT INTO country(name) VALUE ?";
     private static final String UPDATE = "UPDATE country SET name = ? WHERE id = ?";
-    private static final String DELETE = "DELETE country WHERE id = ?";
+    private static final String DELETE = "DELETE FROM country WHERE id = ?";
     private static final String FIND_BY_NAME = "SELECT id, name FROM country WHERE name = ?";
 
     private ConnectionPool pool;
