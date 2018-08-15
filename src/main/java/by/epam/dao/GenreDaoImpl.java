@@ -21,7 +21,7 @@ public class GenreDaoImpl implements GenreDao {
             "JOIN movie_has_genre ON movie.id = movie_has_genre.movie_id\n" +
             "JOIN genre ON movie_has_genre.genre_id = genre.id\n" +
             "WHERE movie_id = ?";
-    private static final String CREATE = "INSERT INTO genre(name) VALUE ?";
+    private static final String CREATE = "INSERT INTO genre(name) VALUE (?)";
     private static final String UPDATE = "UPDATE genre SET name = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM genre WHERE id = ?";
     private static final String FIND_BY_NAME = "SELECT id, name FROM genre WHERE name = ?";

@@ -21,7 +21,7 @@ public class CountryDaoImpl implements CountryDao {
             "JOIN movie_has_country ON movie.id = movie_has_country.movie_id " +
             "JOIN country ON movie_has_country.country_id = country.id " +
             "WHERE movie_id = ?";
-    private static final String CREATE = "INSERT INTO country(name) VALUE ?";
+    private static final String CREATE = "INSERT INTO country(name) VALUE (?)";
     private static final String UPDATE = "UPDATE country SET name = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM country WHERE id = ?";
     private static final String FIND_BY_NAME = "SELECT id, name FROM country WHERE name = ?";
