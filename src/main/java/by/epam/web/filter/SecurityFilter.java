@@ -9,8 +9,29 @@ import java.io.IOException;
 
 @WebFilter(urlPatterns = {"/front"})
 public class SecurityFilter implements Filter {
-    private static final String[] RESTRICTED_FOR_USERS = {"AdminPage", "DeleteMovie", "EditMovie", "GrantOrDenyAdmin", "DeleteReview", "EnableOrDisableUser"};
-    private final static String[] ALLOWED_FOR_GUESTS = {"ChangeLanguage", "Details", "Home", "Signin", "Signup", "Unknown"};
+    private static final String[] RESTRICTED_FOR_USERS =
+            {
+                    "AdminPage",
+                    "DeleteMovie",
+                    "EditMovie",
+                    "GrantOrDenyAdmin",
+                    "DeleteReview",
+                    "EnableOrDisableUser",
+                    "AddGenreOrCountryCommand",
+                    "DeleteGenreOrCountryCommand",
+                    "GenresOrCountriesCommand",
+                    "EditGenreOrCountryCommand"
+            };
+    private final static String[] ALLOWED_FOR_GUESTS =
+            {
+                    "ChangeLanguage",
+                    "Details",
+                    "Home",
+                    "Signin",
+                    "Signup",
+                    "Unknown"
+            };
+
     private FilterConfig filterConfig;
 
     @Override
@@ -19,7 +40,9 @@ public class SecurityFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest,
+                         ServletResponse servletResponse,
+                         FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         ActiveUser activeUser = (ActiveUser) request.getSession(false).getAttribute("activeUser");
         boolean authorized = activeUser != null;

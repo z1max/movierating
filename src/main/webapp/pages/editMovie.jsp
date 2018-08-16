@@ -66,7 +66,7 @@
                     </div>
                     <label for="description"><fmt:message key="movie.description"/></label>
                     <textarea class="review" name="description" id="description" form="movie-form">${movie.description}</textarea>
-                    <input class="button" type="submit" value="<fmt:message key="submit"/>">
+                    <input class="button" type="submit" value="<fmt:message key="button.submit"/>">
                 </form>
             </div>
         </section>

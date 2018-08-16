@@ -12,6 +12,8 @@
             <div class="content">
                 <div class="content-full">
                     <a class="button" href="front?command=EditMovie"><fmt:message key="movie.add"/></a>
+                    <a class="button" href="front?command=GenresOrCountries&entity=genres"><fmt:message key="movie.genres"/></a>
+                    <a class="button" href="front?command=GenresOrCountries&entity=countries"><fmt:message key="movie.countries"/></a>
                 </div>
                 <table class="users-table">
                     <thead>

@@ -5,11 +5,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema movie_rating
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `movie_rating` ;
-
--- -----------------------------------------------------
--- Schema movie_rating
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `movie_rating` DEFAULT CHARACTER SET utf8 ;
 USE `movie_rating` ;
 
@@ -25,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`user` (
   `password` VARCHAR(64) NOT NULL,
   `registered` TIMESTAMP NOT NULL,
   `enabled` BIT NOT NULL,
-  `points` INT UNSIGNED NULL,
+  `points` INT UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC),
   UNIQUE INDEX `username_UNIQUE` (`username` ASC))
@@ -64,13 +59,13 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`movie` (
   `title` VARCHAR(60) NOT NULL,
   `director` VARCHAR(45) NOT NULL,
   `release_date` DATE NOT NULL,
-  `budget` INT UNSIGNED NULL,
-  `description` VARCHAR(1200) NULL,
-  `runtime` SMALLINT NULL,
+  `budget` INT UNSIGNED NULL DEFAULT NULL,
+  `description` VARCHAR(1200) NULL DEFAULT NULL,
+  `runtime` SMALLINT UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
-COMMENT = 'Represwent a movie';
+COMMENT = 'Represent a movie';
 
 
 -- -----------------------------------------------------
@@ -79,9 +74,10 @@ COMMENT = 'Represwent a movie';
 DROP TABLE IF EXISTS `movie_rating`.`genre` ;
 
 CREATE TABLE IF NOT EXISTS `movie_rating`.`genre` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COMMENT = 'Genre of movie';
@@ -96,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `movie_rating`.`review` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `movie_id` INT NOT NULL,
-  `comment` TEXT(2000) NULL,
+  `comment` TEXT(2000) NOT NULL,
   `date` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_review_user_idx` (`user_id` ASC),
@@ -149,12 +145,13 @@ COMMENT = 'Represents rating of current user about current movie';
 DROP TABLE IF EXISTS `movie_rating`.`country` ;
 
 CREATE TABLE IF NOT EXISTS `movie_rating`.`country` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
-COMMENT = 'Countries that have made the currrent movie';
+COMMENT = 'Countries that have made the current movie';
 
 
 -- -----------------------------------------------------

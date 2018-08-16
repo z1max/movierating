@@ -100,7 +100,7 @@
                     <textarea class="review" form="review" name="review"></textarea>
                     <form class="form" id="review" method="post" action="front?command=WriteReview">
                         <input type="hidden" name="movieId" value="${movie.id}">
-                        <input class="button" type="submit" value="<fmt:message key="submit"/>">
+                        <input class="button" type="submit" value="<fmt:message key="button.submit"/>">
                     </form>
                 </div>
             </div>

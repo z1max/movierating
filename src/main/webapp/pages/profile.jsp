@@ -41,7 +41,7 @@
                             <label for="new-password"><fmt:message key="user.newPassword"/></label>
                             <input id="new-password" name="new-password" type="password">
 
-                            <input type="submit" class="button" value="<fmt:message key="submit"/>">
+                            <input type="submit" class="button" value="<fmt:message key="button.submit"/>">
                         </form>
                     </div>
                     <hr/>
@@ -53,7 +53,7 @@
                               action="front?command=DeleteAccount">
                             <label for="password"><fmt:message key="user.password"/> </label>
                             <input id="password" name="password" type="password">
-                            <input type="submit" class="button" value="<fmt:message key="submit"/>">
+                            <input type="submit" class="button" value="<fmt:message key="button.submit"/>">
 
                         </form>
                     </div>
