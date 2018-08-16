@@ -6,11 +6,11 @@ import by.epam.service.UserService;
 public class DeleteUserCommand extends Command {
     @Override
     public CommandResponse process() {
-        UserService userService = appContext.getUserService();
-        int userId = Integer.valueOf(wrapper.getParameter("userId"));
+        UserService service = appContext.getUserService();
+        int userId = Integer.parseInt(wrapper.getParameter("userId"));
 
         try {
-            userService.delete(userId);
+            service.delete(userId);
         } catch (ServiceException e) {
             wrapper.setAttribute("errorMessageKey", e.getMessage());
         }

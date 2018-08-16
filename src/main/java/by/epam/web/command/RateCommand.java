@@ -5,14 +5,15 @@ import by.epam.exception.ServiceException;
 import by.epam.model.Rating;
 import by.epam.service.RatingService;
 
+@SuppressWarnings("Duplicates")
 public class RateCommand extends Command {
     @Override
     public CommandResponse process() {
         RatingService service = appContext.getRatingService();
 
         ActiveUser activeUser = (ActiveUser) wrapper.getSessionAttribute("activeUser");
-        byte enteredRating = Byte.valueOf(wrapper.getParameter("rating"));
-        int movieId = Integer.valueOf(wrapper.getParameter("movieId"));
+        byte enteredRating = Byte.parseByte(wrapper.getParameter("rating"));
+        int movieId = Integer.parseInt(wrapper.getParameter("movieId"));
         Rating rating = new Rating(activeUser.getId(), movieId, enteredRating);
 
         try {
@@ -23,7 +24,7 @@ public class RateCommand extends Command {
                     .build();
         } catch (ServiceException e) {
             wrapper.setAttribute("errorMessageKey", e.getMessage());
-            return CommandResponse.forwardUnknown();
+            return CommandResponse.forwardError();
         }
     }
 }

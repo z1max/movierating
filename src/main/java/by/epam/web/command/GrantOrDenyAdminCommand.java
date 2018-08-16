@@ -7,7 +7,7 @@ public class GrantOrDenyAdminCommand extends Command {
     @Override
     public CommandResponse process() {
         UserService service = appContext.getUserService();
-        int id = Integer.valueOf(wrapper.getParameter("userId"));
+        int id = Integer.parseInt(wrapper.getParameter("userId"));
 
         try {
             service.grantOrDenyAdminAuthority(id);
@@ -17,7 +17,7 @@ public class GrantOrDenyAdminCommand extends Command {
                     .build();
         } catch (ServiceException e) {
             wrapper.setAttribute("errorMessageKey", e.getMessage());
-            return CommandResponse.forwardUnknown();
+            return CommandResponse.forwardError();
         }
     }
 }

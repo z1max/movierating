@@ -12,7 +12,7 @@ public class DetailsCommand extends Command {
         RatingService ratingService = appContext.getRatingService();
         MovieService movieService = appContext.getMovieService();
 
-        int movieId = Integer.valueOf(wrapper.getParameter("id"));
+        int movieId = Integer.parseInt(wrapper.getParameter("id"));
         ActiveUser activeUser = (ActiveUser) wrapper.getSessionAttribute("activeUser");
 
         try {

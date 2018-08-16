@@ -56,7 +56,7 @@ public class SecurityFilter implements Filter {
         }
         if (authorized && !activeUser.isAdmin() && hasAuthority(command, RESTRICTED_FOR_USERS)){
             request.setAttribute("errorMessageKey", "exception.accessDenied");
-            request.getRequestDispatcher("pages/unknown.jsp").forward(request, servletResponse);
+            request.getRequestDispatcher("pages/error.jsp").forward(request, servletResponse);
             return;
         }
 

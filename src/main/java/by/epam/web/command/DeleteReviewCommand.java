@@ -1,14 +1,18 @@
 package by.epam.web.command;
 
 import by.epam.exception.ServiceException;
+import by.epam.service.ReviewService;
 
 public class DeleteReviewCommand extends Command {
     @Override
     public CommandResponse process() {
-        int reviewId = Integer.valueOf(wrapper.getParameter("reviewId"));
-        int movieId = Integer.valueOf(wrapper.getParameter("movieId"));
+        ReviewService reviewService = appContext.getReviewService();
+
+        int reviewId = Integer.parseInt(wrapper.getParameter("reviewId"));
+        int movieId = Integer.parseInt(wrapper.getParameter("movieId"));
+
         try {
-            appContext.getReviewService().delete(reviewId);
+            reviewService.delete(reviewId);
         } catch (ServiceException e) {
             wrapper.setAttribute("errorMessageKey", e.getMessage());
         }

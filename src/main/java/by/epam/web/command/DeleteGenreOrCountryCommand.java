@@ -19,7 +19,7 @@ public class DeleteGenreOrCountryCommand extends Command {
                         .build();
             } catch (ServiceException e) {
                 wrapper.setAttribute("errorMessageKey", e.getMessage());
-                return CommandResponse.forwardUnknown();
+                return CommandResponse.forwardError();
             }
         } else {
             try {
@@ -31,7 +31,7 @@ public class DeleteGenreOrCountryCommand extends Command {
                         .build();
             } catch (ServiceException e) {
                 wrapper.setAttribute("errorMessageKey", e.getMessage());
-                return CommandResponse.forwardUnknown();
+                return CommandResponse.forwardError();
             }
         }
     }

@@ -24,7 +24,7 @@ public class ChangePasswordCommand extends Command {
                     .build();
         } catch (ServiceException e) {
             wrapper.setAttribute("errorMessageKey", e.getMessage());
-            return CommandResponse.forwardUnknown();
+            return CommandResponse.forwardError();
         }
     }
 }

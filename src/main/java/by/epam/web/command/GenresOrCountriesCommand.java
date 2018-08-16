@@ -32,7 +32,7 @@ public class GenresOrCountriesCommand extends Command {
                     .build();
         } else {
             wrapper.setAttribute("errorMessageKey", "exception.unknownCommand");
-            return CommandResponse.forwardUnknown();
+            return CommandResponse.forwardError();
         }
     }
 }

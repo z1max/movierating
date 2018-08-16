@@ -50,8 +50,8 @@ public class CommandResponse {
         return new CommandResponse().new Builder();
     }
 
-    public static CommandResponse forwardUnknown(){
-        return new CommandResponse("unknown");
+    public static CommandResponse forwardError(){
+        return new CommandResponse("error");
     }
 
     public static CommandResponse forwardIndex(){

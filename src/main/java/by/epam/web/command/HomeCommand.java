@@ -1,7 +1,10 @@
 package by.epam.web.command;
 
+import by.epam.dto.LazyMovie;
 import by.epam.exception.ServiceException;
 import by.epam.service.MovieService;
+
+import java.util.List;
 
 public class HomeCommand extends Command{
     @Override
@@ -9,7 +12,8 @@ public class HomeCommand extends Command{
         MovieService service = appContext.getMovieService();
 
         try {
-            wrapper.setAttribute("movies", service.getAll());
+            List<LazyMovie> movies = service.getAll();
+            wrapper.setAttribute("movies", movies);
         } catch (ServiceException e) {
             wrapper.setAttribute("errorMessageKey", e.getMessage());
         }
