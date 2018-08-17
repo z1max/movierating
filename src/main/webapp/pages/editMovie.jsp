@@ -30,12 +30,14 @@
                     <input id="runtime" name="runtime" type="number" value="${movie.runtime}">
 
                     <h1><fmt:message key="movie.genres"/></h1>
-                    <select id="genre-select">
-                        <c:forEach items="${genres}" var="genre">
-                            <option value="${genre.getName()}">${genre.getName()}</option>
-                        </c:forEach>
-                    </select>
-                    <button type="button" onclick="addEnumItem('genre-select', 'genres')">Add genre</button>
+                    <div class="custom-select">
+                        <select id="genre-select" onchange="addEnumItem('genre-select', 'genres')">
+                            <c:forEach items="${genres}" var="genre">
+                                <option value="${genre.getName()}">${genre.getName()}</option>
+                            </c:forEach>
+                        </select>
+                        <div class="select-arrow"></div>
+                    </div>
                     <div id="genres" class="bordered">
                         <c:if test="${not empty movie.genres}">
                             <c:forEach items="${movie.genres}" var="genre">
@@ -46,26 +48,29 @@
                             </c:forEach>
                         </c:if>
                     </div>
-
                     <h1><fmt:message key="movie.countries"/></h1>
-                    <select id="country-select">
-                        <c:forEach items="${countries}" var="country">
-                            <option value="${country.getName()}">${country.getName()}</option>
-                        </c:forEach>
-                    </select>
-                    <button type="button" onclick="addEnumItem('country-select', 'countries')">Add Country</button>
+                    <div class="custom-select">
+                        <select id="country-select" onchange="addEnumItem('country-select', 'countries')">
+                            <c:forEach items="${countries}" var="country">
+                                <option value="${country.getName()}">${country.getName()}</option>
+                            </c:forEach>
+                        </select>
+                        <div class="select-arrow"></div>
+                    </div>
                     <div id="countries" class="bordered">
                         <c:if test="${not empty movie.countries}">
                             <c:forEach items="${movie.countries}" var="country">
                                 <div>
-                                    <input type="text" readonly="readonly" name="countries" value="${country.getName()}">
+                                    <input type="text" readonly="readonly" name="countries"
+                                           value="${country.getName()}">
                                     <button type="button" onclick="remove(this)">Remove</button>
                                 </div>
                             </c:forEach>
                         </c:if>
                     </div>
                     <label for="description"><fmt:message key="movie.description"/></label>
-                    <textarea class="review" name="description" id="description" form="movie-form">${movie.description}</textarea>
+                    <textarea class="review" name="description" id="description"
+                              form="movie-form">${movie.description}</textarea>
                     <input class="button" type="submit" value="<fmt:message key="button.submit"/>">
                 </form>
             </div>
